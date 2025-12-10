@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>In-Context Algebra</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="Transformers use symbolic algorithms to solve math problems when tokens are variables whose meaning can only be inferred in-context." />
+    <meta property="og:title" content="In-Context Algebra" />
+    <meta property="og:url" content="https://algebra.baulab.info/" />
+    <meta property="og:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <meta property="og:description" content="Understanding the learned algorithms of transformer language models solving abstract algebra problems through in-context learning." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="In-Context Algebra" />
+    <meta name="twitter:description" content="Understanding the learned algorithms of transformer language models solving abstract algebra problems through in-context learning." />
+    <meta name="twitter:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <style>
+        .relatedthumb {
+            float: left;
+            width: 200px;
+            margin: 3px 10px 7px 0;
+        }
+
+        .relatedblock {
+            clear: both;
+            display: inline-block;
+        }
+
+        .bold-sc {
+            font-variant: small-caps;
+            font-weight: bold;
+        }
+
+        .cite,
+        .citegroup {
+            margin-bottom: 8px;
+        }
+
+        :target {
+            background-color: yellow;
+        }
+
+        .mechanism-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .badge-copy {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-identity {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-cancel {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-commute {
+            background-color: #e2d5f5;
+            color: #5a2d82;
+        }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD12LWN557"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date()); gtag('config', 'G-FD12LWN557');
+    </script>
+
+</head>
+
+<body class="nd-docs">
+    <div class="nd-pageheader">
+        <div class="container">
+            <h1 class="lead">
+                <nobr class="widenobr">In-Context Algebra</nobr>
+            </h1>
+            <address>
+                <nobr><a href="https://ericwtodd.github.io/" target="_blank">Eric Todd</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://www.jannikbrinkmann.com/" target="_blank">Jannik Brinkmann</a><sup>1,2</sup>,</nobr>
+                <nobr><a href="https://rohitgandikota.github.io/" target="_blank">Rohit Gandikota</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://baulab.info/" target="_blank">David Bau</a><sup>1</sup></nobr><br>
+                <nobr><sup>1</sup><a href="https://khoury.northeastern.edu/" target="_blank">Northeastern University</a>,</nobr>
+                <nobr><sup>2</sup><a href="https://www.tu-clausthal.de/en/" target="_blank">Technical University Clausthal</a></nobr>
+            </address>
+        </div>
+    </div><!-- end nd-pageheader -->
+
+    <div class="container">
+        <div class="row justify-content-center" style="margin-bottom: 20px">
+        </div>
+        <div class="row justify-content-center text-center">
+
+            <p>
+                <a href="" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/paper-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="ArXiv Preprint thumbnail" data-nothumb="">
+                    <br>ArXiv<br>Preprint</a>
+                <a href="https://github.com/ericwtodd/algebra" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/code-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Github code thumbnail" data-nothumb="">
+                    <br>Source Code<br>Github
+                </a>
+                <a href="" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/data-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Dataset thumbnail" data-nothumb="">
+                    <br>Data<br>
+                </a>
+            </p>
+
+            <div class="card" style="max-width: 1020px;">
+                <div class="card-block">
+                <h3>What Happens When Transformers Solve Algebra With Pure Variables?</h3>
+                <p style="text-align: justify;">
+                    In this paper, we investigate how transformers learn to solve arithmetic problems when tokens act as pure variables—symbols 
+                    whose meanings are determined only through their interactions within each sequence. Unlike previous studies where tokens have 
+                    fixed meanings (e.g., "2" always means two), our setting forces models to infer algebraic structure solely from contextual 
+                    relationships. We train small transformers on sequences of algebraic facts sampled from finite groups, where the same token 
+                    can represent different group elements across different sequences.
+                </p>
+                <p style="text-align: justify;">
+                    Surprisingly, we find that models develop fundamentally different reasoning strategies than those observed in previous arithmetic 
+                    studies. Rather than learning geometric representations like Fourier bases, the model acquires symbolic reasoning mechanisms 
+                    based on sparse relational patterns. We identify three primary algorithmic strategies: 
+                    <span class="mechanism-badge badge-copy">verbatim copying</span>, 
+                    <span class="mechanism-badge badge-commute">commutative copying</span>, 
+                    <span class="mechanism-badge badge-identity">identity element recognition</span>, and 
+                    <span class="mechanism-badge badge-cancel">closure-based cancellation</span>.
+                </p>
+                </div><!--card-block-->
+                </div><!--card-->
+
+        </div><!--row-->
+
+        <div class="row">
+            <div class="col">
+                
+                <h2>The Task: In-Context Algebra</h2>
+                <p>
+                    We train transformers to simulate finite algebraic groups through in-context learning. Each training sequence presents 
+                    several examples of products between group elements (e.g., "a·b = c"), and the model must predict the outcome of new 
+                    group products. The key challenge: vocabulary tokens are variables that can represent different group elements in 
+                    different sequences.
+                </p>
+                
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/task-overview.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 1: Task Overview.</strong> (a) We sample algebraic groups and assign their elements to vocabulary symbols. 
+                        (b) Facts are sampled and converted to variable statements via a latent mapping φ<sub>s</sub>. (c) Each sequence uses 
+                        different groups and mappings, so the same token can have completely different meanings across sequences.
+                    </figcaption>
+                </figure>
+
+                <h2>Can Transformers Learn In-Context Algebra?</h2>
+                <p>
+                    Despite the challenging setting where tokens have no fixed meanings, transformers achieve near-perfect accuracy 
+                    on this task and even generalize to unseen algebraic groups. The model shows three key capabilities:
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/performance.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 2: Model Performance.</strong> (a) Accuracy increases with context length, with larger groups requiring 
+                        more in-context facts. (b) The model shows a sharp phase transition on non-copyable facts during training, indicating 
+                        emergence of non-trivial reasoning. (c) The model generalizes to unseen groups and even achieves non-trivial accuracy 
+                        on non-group structures like semigroups and magmas.
+                    </figcaption>
+                </figure>
+
+                <h2>Mechanism 1: Copying and Commutative Copying</h2>
+                <p>
+                    We identify a single attention head (layer 3, head 6) primarily responsible for copying answers from context. 
+                    This head can perform both verbatim copying (when an exact duplicate fact exists) and commutative copying 
+                    (when a commutative pair exists, e.g., copying "ba = c" when the query is "ab =").
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/copying-mechanism.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 3: The Copying Mechanism.</strong> Attention patterns (a-d) and logit contributions (e-h) of the copying 
+                        head across different contexts. (a,e) With verbatim copying possible, the head attends to and promotes the duplicate fact. 
+                        (b,f) Without exact duplicates, it shifts to commutative facts. (c,g) When neither is available, it self-attends and 
+                        doesn't strongly promote any token. (d,h) When we inject a corrupted fact, it attends to both answers, showing it 
+                        blindly copies what it attends to.
+                    </figcaption>
+                </figure>
+
+                <h2>Mechanism 2: Identity Element Recognition</h2>
+                <p>
+                    The model learns to recognize identity elements—special group elements where e·x = x·e = x for all x. This emerges 
+                    from two complementary mechanisms: <strong>query promotion</strong> (elevating both query variables as potential answers) 
+                    and <strong>identity demotion</strong> (suppressing the known identity element). When both activate simultaneously, 
+                    the non-identity token is correctly selected.
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/identity-mechanism.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 4: Identity Recognition.</strong> (a) PCA analysis reveals clear separation between identity facts (blue) 
+                        and non-identity facts (red) in the model's representations. (b) Head 3.1 promotes both query variables, while head 3.6 
+                        demotes the identity element. (c) We can causally control identity behavior through PCA steering and by injecting false 
+                        identity facts.
+                    </figcaption>
+                </figure>
+
+                <h2>Mechanism 3: Closure-Based Cancellation</h2>
+                <p>
+                    When copying isn't possible, the model uses a sophisticated elimination strategy. It tracks which variables belong 
+                    to the same algebraic group (the <em>closure</em>) and systematically eliminates invalid answers using the cancellation 
+                    law. We discover this mechanism by training subspaces that causally represent the closure and elimination sets, achieving 
+                    99.8% intervention accuracy.
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/cancellation-mechanism.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 5: Closure-Based Cancellation.</strong> The model computes valid answers as the set difference 
+                        (Closure - Elimination). When predicting the right-slot, the model produces uniform logits over all previously 
+                        associated variables, confirming it has learned to compute group closure. We can causally intervene on learned 
+                        subspaces to manipulate both closure and elimination sets.
+                    </figcaption>
+                </figure>
+
+                <h2>Algorithmic Coverage Analysis</h2>
+                <p>
+                    To understand how much of the model's behavior these mechanisms explain, we implement Python equivalents of each 
+                    algorithm and measure their coverage—the percentage of sequences they can theoretically solve. Our identified 
+                    mechanisms explain a substantial portion of the model's empirical performance.
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/Paper/coverage.png" style="width:100%">
+                    <figcaption>
+                        <strong>Figure 6: Algorithmic Coverage.</strong> (a) Coverage across different mechanisms on training data. 
+                        Verbatim copying (green) solves the most sequences, followed by commutative copying (purple), identity recognition 
+                        (yellow), and closure-based cancellation (red). The model (black) exceeds the total algorithmic coverage, suggesting 
+                        additional learned strategies. (b) On hold-out sequences where copying is impossible, identity recognition and 
+                        cancellation become much more important. (c) The model achieves 97-100% accuracy on targeted distributions testing 
+                        each mechanism, except for associative composition (60%).
+                    </figcaption>
+                </figure>
+
+                <h2>Phase Transitions in Learning</h2>
+                <p>
+                    The model undergoes distinct phase transitions during training, with each marked by a sharp drop in loss. 
+                    The earliest ability to emerge is <strong>group closure</strong>—understanding that combining two elements 
+                    yields another valid group element. This is followed by <strong>contextual copying</strong>, first reproducing 
+                    facts verbatim and then extending to commutativity-aware copying. Later stages include <strong>identity recognition</strong> 
+                    and <strong>elimination reasoning</strong>, which emerge more gradually and appear to build on copying mechanisms.
+                </p>
+
+                <h2>Key Insights</h2>
+                <div class="card" style="margin-top: 20px; margin-bottom: 30px;">
+                    <div class="card-block">
+                        <ul style="text-align: left;">
+                            <li><strong>Symbolic over geometric:</strong> When tokens lack fixed meanings, transformers develop symbolic 
+                            reasoning mechanisms rather than geometric representations.</li>
+                            <li><strong>Sparse relational patterns:</strong> The model relies on sparse attention patterns that identify 
+                            relevant facts rather than dense embedding-space computations.</li>
+                            <li><strong>Hierarchical emergence:</strong> Capabilities emerge in a consistent order: closure recognition → 
+                            copying → identity recognition → elimination.</li>
+                            <li><strong>Causal subspaces:</strong> High-level algorithmic concepts (like closure sets) can be localized 
+                            to specific subspaces that have strong causal control.</li>
+                            <li><strong>Beyond copying:</strong> While copying solves most training sequences, non-trivial mechanisms 
+                            are necessary and sufficient for generalization.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h2>Related Work</h2>
+                <p>This work builds upon and extends several lines of research:</p>
+
+                <p class="citation"><a href="https://arxiv.org/abs/2201.02177"><img src="images/power-2022.png" alt="power-2022">Alethea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, and Vedant Misra. Grokking: Generalization beyond overfitting on small algorithmic datasets. 2022.</a><br>
+                <b>Notes:</b> Introduced the grokking phenomenon where models first memorize then suddenly generalize on modular arithmetic, revealing periodic embedding structures.
+                </p>
+
+                <p class="citation"><a href="https://arxiv.org/abs/2310.15213"><img src="images/todd-2024.png" alt="todd-2024">Eric Todd, Millicent Li, Arnab Sen Sharma, Aaron Mueller, Byron C Wallace, and David Bau. Function Vectors in Large Language Models. ICLR 2024.</a><br>
+                <b>Notes:</b> Identified compact vector representations of functions in LLMs that can trigger task execution across different contexts.
+                </p>
+
+                <p class="citation"><a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html"><img src="images/olsson-2022.png" alt="olsson-2022">Catherine Olsson, Nelson Elhage, Neel Nanda, et al. In-context learning and induction heads. Transformer Circuits Thread, 2022.</a><br>
+                <b>Notes:</b> Discovered induction heads that implement copying via prefix matching, a key mechanism in in-context learning.
+                </p>
+
+                <h2>How to cite</h2>
+
+                <p>This work is currently a preprint. The paper can be cited as follows.</p>
+
+                <div class="card">
+                    <h3 class="card-header">bibliography</h3>
+                    <div class="card-block">
+                        <p style="text-indent: -3em; margin-left: 3em;" class="card-text clickselect">
+                        Eric Todd, Jannik Brinkmann, Rohit Gandikota, and David Bau. "<em>In-Context Algebra.</em>" Preprint, 2025.
+                        </p>
+                    </div>
+                    <h3 class="card-header">bibtex</h3>
+                    <div class="card-block">
+                        <pre class="card-text clickselect">
+@article{todd2025algebra,
+    title={In-Context Algebra}, 
+    author={Eric Todd and Jannik Brinkmann and Rohit Gandikota and David Bau},
+    year={2025},
+    note={Preprint}
+}</pre>
+                    </div>
+                </div>
+
+            </div> <!--col -->    
+        </div> <!--row -->
+    </div> <!-- container -->
+
+    <footer class="nd-pagefooter">
+        <div class="row">
+            <div class="col-6 col-md text-center">
+                <a href="https://baulab.info/">About the Bau Lab</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script>
+    $(document).on('click', '.clickselect', function (ev) {
+        var range = document.createRange();
+        range.selectNodeContents(this);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    });
+</script>
+
+</html>
