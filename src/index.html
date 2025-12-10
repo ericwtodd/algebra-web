@@ -103,11 +103,7 @@
                         alt="Dataset thumbnail" data-nothumb="">
                     <br>Data<br>
                 </a>
-                <!-- <a href="files/iclr-poster.pdf" class="d-inline-block p-3 align-bottom" target="_blank">
-                    <img height="78" width="100" src="images/iclr-poster-thumb.png" style="border:1px solid; margin: 0 38px;"
-                        alt="Poster thumbnail" data-nothumb="">
-                    <br>ICLR<br>Poster
-                </a> -->
+
             </p>
 
             <div class="card" style="max-width: 1020px;">
@@ -116,22 +112,15 @@
                 <p>
                     Much of the performance of language models (LMs) can be attributed to the power of token embeddings;
                     prior work has shown that token embeddings can pre-encode rich semantic, syntactic, and numeric structure.
-                    However, a hallmark of <b>abstract reasoning</b> is the ability to work with words and symbols whose meaning is unknown ahead of time.
+                    However, the hallmark of <b>abstract reasoning</b> is the ability to work with words and symbols whose meaning is unknown ahead of time.
                 </p>
                 <p>
-                    In this paper we study what strategies transformer LMs learn when trained to solve abstract arithmetic tasks 
-                    where <b>tokens act as pure variables</b>, acquiring meaning only through their interactions within a sequence.                    
-                    Instead of learning geometric representations of a Fourier basis as seen in prior work on numeric reasoning (where token meanings are fixed), 
-                    we find models acquire symbolic reasoning mechanisms based on sparse relational patterns.
-
-                    The reasoning strategies learned are dependent on the task structure
-                    The reasoning strategies learned are dependent on the task structure
-
-
-
-
-                    In this project, we design an in-context learning task, 
-                    
+                    In this paper, we design an in-context learning setting to study the computational strategies that transformers develop to solve abstract arithmetic tasks.
+                    What makes our setting unique is that <b>each token is a variable</b> that can represent any algebraic element, and <b>tokens acquire meaning only through their interactions within a sequence.</b>
+                    <!-- The meaning of each token is only fixed within a single sequence. -->
+                    In contrast to the geometric representations learned for numeric reasoning seen in prior work (where token meanings are fixed), we find that models develop symbolic reasoning mechanisms based on sparse relational patterns. 
+                    This suggests that the kind of reasoning strategies learned by transformers are dependent on the task structure.
+                    We identify three primary algorithmic strategies models consistently employ beyond verbatim copying to solve the in-context algebra task: commutative copying, identity element recognition, and closure-based cancellation.                                      
                 </p>
                 </div><!--card-block-->
                 </div><!--card-->
@@ -141,16 +130,19 @@
         <div class="row">
             <div class="col">
 
-                <h2>Task Description</h2>
+                <h2>The Task: In-Context Algebra</h2>
+                
 
                 <figure class="center_image" style="margin-top: 30px">
-                    <img src="images/paper/data_assign_generate.gif" class="medfig" style="width:100%">
+                    <img src="images/paper/data_assign_generate.gif" class="smallfig" style="width:100%">
                     <figcaption>
                         Data Generation Process
                     </figcaption>
                 </figure>
 
                 <h2>HEADER</h2>
+
+                <h2>Hypothesizing Model Mechanisms</h2>
 
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/coverage.png" style="width:100%">
@@ -159,7 +151,37 @@
                     </figcaption>
                 </figure>
 
-                <h2>HEADER</h2>
+                <h2>Verifying Mechanisms</h2>
+
+                <h3>Copying and Commutative Copying</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Copying
+                    </figcaption>
+                </figure>
+
+                <h3>Identity Element Recognition</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Identity Element Recognition
+                    </figcaption>
+                </figure>
+
+                <h3>Closure-Based Cancellation</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Closure-Based Cancellation
+                    </figcaption>
+                </figure>
+
+
+                <h2>Phase Transitions</h2>
 
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/phase_transition.png" style="width:100%">
@@ -175,7 +197,7 @@
                 
                 <!-- <h2>Related Work</h2> -->
 
-                <h2>Related Work</h2>
+                <h2 >Related Work</h2>
 
 
                 
@@ -230,14 +252,9 @@
                     <b>Notes:</b> 
                 </p> 
 
-                <p class="citation"><a href="https://arxiv.org/pdf/2502.00873"><img src="images/related_work/kantamnemi-addition.png" alt="kantamnemi-addition-2025"> Subhash Kantamnemi, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
+                <p class="citation"><a href="https://arxiv.org/pdf/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
                     <b>Notes:</b> 
                 </p> 
-
-
-                <!-- <p class="citation"><a href="https://arxiv.org/pdf/2310.15916.pdf"><img src="images/hendel-2023.png" alt="hendel-2023">Roee Hendel, Mor Geva, Amir Globerson. In-Context Learning Creates Task Vectors. 2023.</a><br>
-                    <b>Notes:</b> Function vectors have been independently observed in simultaneous work by Hendel et al. (2023), who examine the phenomenon on a different set of models and tasks.  (In a terrific coincidence, our preprint and theirs were arXived on exactly the same day!)
-                </p>  -->
 
                 
 
