@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>In-Context Algebra</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description"
+        content="" />
+    <meta property="og:title" content="In-Context Algebra" />
+    <meta property="og:url" content="https://algebra.baulab.info/" />
+    <meta property="og:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <meta property="og:description" content="Transformers use symbolic algorithms to solve math problems when tokens are variables whose meaning can only be inferred in-context.">
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="In-Context Algebra" />
+    <meta name="twitter:description"
+        content="Understanding the learned algorithms of transformer language models solving abstract algebra problems through in-context learning." />
+    <meta name="twitter:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <style>
+        .relatedthumb {
+            float: left;
+            width: 200px;
+            margin: 3px 10px 7px 0;
+        }
+
+        .relatedblock {
+            clear: both;
+            display: inline-block;
+        }
+
+        .bold-sc {
+            font-variant: small-caps;
+            font-weight: bold;
+        }
+
+        .cite,
+        .citegroup {
+            margin-bottom: 8px;
+        }
+
+        :target {
+            background-color: yellow;
+        }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD12LWN557"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date()); gtag('config', 'G-FD12LWN557');
+    </script>
+
+</head>
+
+<body class="nd-docs">
+    <div class="nd-pageheader">
+        <div class="container">
+            <h1 class="lead">
+                <nobr class="widenobr">In-Context Algebra</nobr>
+            </h1>
+            <address>
+                <nobr><a href="https://ericwtodd.github.io/" target="_blank">Eric Todd</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://www.jannikbrinkmann.com/" target="_blank">Jannik Brinkmann</a><sup>1,2</sup>,</nobr>
+                <nobr><a href="https://rohitgandikota.github.io/" target="_blank">Rohit Gandikota</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://baulab.info/" target="_blank">David Bau</a><sup>1</sup></nobr><br>
+                <nobr><sup>1</sup><a href="https://khoury.northeastern.edu/" target="_blank">Northeastern University</a>,</nobr>
+                <nobr><sup>2</sup><a href="https://www.tu-clausthal.de/en/" target="_blank">TU Clausthal</a></nobr>
+            </address>
+        </div>
+    </div><!-- end nd-pageheader -->
+
+    <div class="container">
+        <div class="row justify-content-center" style="margin-bottom: 20px">
+        </div>
+        <div class="row justify-content-center text-center">
+
+            <p>
+                <a href="" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/paper-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="ArXiv Preprint thumbnail" data-nothumb="">
+                    <br>ArXiv<br>Preprint</a>
+                <a href="https://github.com/ericwtodd/algebra" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/code-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Github code thumbnail" data-nothumb="">
+                    <br>Source Code<br>Github
+                </a>
+                <a href="" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/data-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Dataset thumbnail" data-nothumb="">
+                    <br>Data<br>
+                </a>
+
+            </p>
+
+            <div class="card" style="max-width: 1020px;">
+                <div class="card-block">
+                <!-- <h3>What Do Transformers Learn Without Meaningful Token Embeddings?</h3> -->
+                <h3>How Do Transformers Reason About Variables In-Context?</h3>
+                <p>
+                    Much of the performance of language models (LMs) can be attributed to the power of token embeddings;
+                    prior work has shown that token embeddings can pre-encode rich semantic, syntactic, and numeric structure. <!-- <a href="https://arxiv.org/abs/2406.03445">(Zhou et al., 2024)</a>-->
+                    However, the hallmark of <b>abstract reasoning</b> is the ability to work with words and symbols whose meaning is unknown ahead of time.
+                </p>
+                <p>
+                    In this paper, we design an in-context learning setting to study the computational strategies that transformers develop to solve abstract arithmetic tasks.
+                    What makes our setting unique is that <b>each token is a variable</b> that can represent any algebraic element, and <b>tokens acquire meaning only through their interactions within a sequence.</b>
+                    In contrast to the geometric representations learned for numeric reasoning seen in prior work (where token meanings are fixed), we find that models develop symbolic reasoning mechanisms based on sparse relational patterns. 
+                    Our findings suggest that the kinds of reasoning strategies learned by transformers are dependent on the task structure.
+                    <!-- We identify three primary algorithmic strategies models consistently employ beyond verbatim copying to solve the in-context algebra task: commutative copying, identity element recognition, and closure-based cancellation.-->
+                </p>
+                </div><!--card-block-->
+                </div><!--card-->
+
+        </div><!--row-->
+
+        <div class="row">
+            <div class="col">
+
+                <h2>The Task: In-Context Algebra</h2>
+                
+                <p>
+                    We train transformers to solve arithmetic problems sampled from a mixture of finite algebraic groups (like cyclic and dihedral groups). 
+                    Each task sequence presents several examples of products between elements in a group with the goal that models will learn to predict the outcome of unseen group products.
+                    However, a key challenge is that <b>each token is a variable whose meaning changes between sequences</b>. 
+                    For example, the symbol "g" might represent the identity in one sequence but a 90-degree rotation in another. 
+                    Models can infer what each symbol means only from how it interacts with other symbols in-context. You can try it for yourself <a href="#play-test">below</a>.
+                </p>
+                <p>
+                    We generate in-context algebra sequences in three steps:
+                    <ol>
+                        <li>First, we sample a set of algebraic groups with total order less than or equal to the number of variable tokens. </li>
+                        <li>Second, we assign each sampled group element a variable token using a random one-to-one mapping.</li>
+                        <li>Third, we sample facts from the randomly sampled groups, convert facts into to variable statements, and concatenate them together into a sequence.</li>
+                    </ol>
+                </p>
+
+                <figure class="center_image" style="margin-top: 30px; justify-content:center">
+                    <img src="images/paper/data_assign_generate.gif" class="smallfig" style="width:100%">
+                    <figcaption>
+                        <b>Data Generation Process.</b> Each in-context algebra sequence is generated by: (1) sampling a set of algebraic groups, (2) randomly assigning variable tokens to group elements, and (3) sampling facts from these groups and concatenating them as a sequence. The same vocabulary symbol can mean different things across sequences, forcing the model to reason in-context.
+                    </figcaption>
+                </figure>
+                
+                
+                <div id="#play-test" class="card" style="max-width: 1020px; margin: 30px auto;">
+                    <div class="card-block" style="padding: 20px;">
+                        <h4>Try It Yourself</h4>
+                        <p>Can you predict the answer? Look at the sequence of facts below and try to figure out what comes next:</p>
+                        
+                        <div id="interactive-demo" style="margin: 20px 0;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.8;">
+                                <span id="demo-sequence"></span><span id="demo-query" style="font-weight: bold; color: #0066cc;"></span>
+                            </div>
+                            
+                            <div style="margin: 20px 0; display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <label for="user-answer" style="font-weight: bold;">Your answer:</label>
+                                    <input type="text" id="user-answer" maxlength="1" style="width: 50px; height: 40px; font-size: 20px; text-align: center; margin: 0 10px; font-family: 'Courier New', monospace;" />
+                                    <button id="check-answer" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">Check</button>
+                                    <button id="show-hint" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">Show Hint</button>
+                                    <button id="new-example" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">New Example</button>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="score-display" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">
+                                        Score: <span id="score-correct">0</span> / <span id="score-total">0</span> (<span id="score-percent">0</span>%)
+                                    </div>
+                                    <button id="reset-score" style="padding: 8px 20px; font-size: 14px; cursor: not-allowed; opacity: 0.5;" disabled>Reset Score</button>
+                                </div>
+                            </div>
+                            
+                            <div id="feedback" style="min-height: 60px; padding: 10px; margin-top: 10px;"></div>
+                            <div id="hint" style="min-height: 40px; padding: 10px; margin-top: 10px; background: #fff3cd; border-radius: 5px; display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <script>
+                // Data from paper - 10 examples per mechanism
+                const rawExamples = {
+                    copy: [',ja=a,ja=a,oo=a,ja=a,dj=d,dj=d,oo=a,dd=a,aj=a,od=j,da=o,da=o,ad=o,oj=o,ao=d,oa=d,oa=d,jo=o,do=j,do=j',
+                        ',gj=h,hg=g,hb=b,jg=h,bb=h,bh=b,gb=j,bb=h,gj=h,bh=b,jh=j,gh=g,bg=j,jb=g,bb=h,hb=b,hh=h,jb=g,hj=j,hb=b',
+                        ',lc=i,cc=l,hh=h,il=l,ga=p,hh=h,nn=p,ll=c,il=l,gh=g,ga=p,il=l,gn=h,ha=a,pp=g,li=l,gn=h,ng=h,hh=h,pp=g',
+                        ',ca=g,gf=g,ga=f,co=f,ca=g,og=a,oa=c,of=o,cg=o,fa=a,gg=c,fo=o,af=a,og=a,oo=g,gc=o,go=a,oc=f,og=a,og=a',
+                        ',mf=f,ff=e,fe=m,ee=f,em=e,ee=f,fe=m,mm=m,mf=f,ff=e,me=e,ff=e,mm=m,mf=f,em=e,fe=m,fe=m,em=e,ee=f,mf=f',
+                        ',ek=e,ol=e,je=k,jn=o,en=d,ak=a,li=d,lk=l,gc=g,bd=a,dd=o,ee=a,kb=b,oe=n,ka=a,en=d,lk=l,ib=n,la=n,bd=a',
+                        ',oj=g,hp=c,go=k,df=j,gg=j,fb=g,fl=b,hi=m,mm=p,kd=d,dg=l,jd=a,kg=g,ea=b,ic=m,ok=o,ja=f,fa=d,ag=e,ok=o',
+                        ',pp=d,kn=f,ca=c,hb=g,if=f,ee=j,jf=n,nm=j,ff=e,me=f,mf=i,nn=k,km=e,me=f,ie=e,nk=f,cc=o,fn=m,hp=l,if=f',
+                        ',ll=c,cc=l,hh=h,cc=l,ch=c,hl=l,lh=l,hl=l,cl=h,hl=l,hc=c,cl=h,ll=c,cc=l,ll=c,ch=c,cl=h,cl=h,lh=l,cl=h',
+                        ',fh=f,ah=a,ah=a,ng=a,fn=h,hm=m,nm=g,fm=n,gg=h,nh=n,aa=m,nh=n,fg=m,af=g,hh=h,ng=a,am=h,ng=a,ha=a,fh=f'],
+                    commute: [',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
+                        ',jm=j,ii=j,ih=m,jj=m,ji=h,hm=h,hj=i,jj=m,jm=j,jh=i,mi=i,mm=m,jm=j,mj=j,ih=m,ii=j,ij=h,hj=i,im=i,mh=h',
+                        ',gj=h,hd=d,dg=a,mn=d,gj=h,mn=d,md=g,jn=m,hh=h,gg=b,hb=b,fm=h,fg=d,bb=d,nj=m,jm=a,na=f,mg=n,ga=m,bh=b',
+                        ',ph=p,nf=n,mm=h,mh=m,fl=l,il=n,gf=g,gi=f,jj=n,jg=i,in=g,gn=l,in=g,ll=f,mh=m,ph=p,fn=n,nj=f,mh=m,li=n',
+                        ',ia=h,bl=g,dd=j,gl=f,op=d,mf=m,gg=b,ca=l,nc=f,lm=n,gb=h,mb=l,nm=h,gh=c,lh=b,bh=a,mm=c,ba=m,ng=m,cn=f',
+                        ',ip=i,eh=p,mn=h,mp=m,he=p,hh=e,nm=h,pe=e,pe=e,ni=e,mh=i,mi=p,ni=e,mm=e,pp=p,ii=h,ee=h,in=e,hm=i,pi=i',
+                        ',ni=h,ae=j,lc=a,la=p,cd=j,ja=d,pc=l,ff=f,ea=j,da=c,pd=a,cl=a,on=i,el=d,jl=c,ed=l,ho=g,io=n,hi=n,dp=a',
+                        ',nn=d,na=i,dn=n,dn=n,aa=n,in=a,na=i,nd=n,da=a,ni=a,di=i,id=i,nn=d,nd=n,da=a,ii=n,na=i,nd=n,ia=d,an=i',
+                        ',ml=i,gh=i,mm=j,oa=a,ng=i,cp=d,in=k,ki=h,jh=h,jm=m,gm=h,kl=g,li=m,kg=j,dc=e,gm=h,lg=k,hh=j,mk=h,gl=k'],
+                        // ',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o', //This one might not be solvable via commutativity?
+                    identity: [',dj=h,kp=e,gb=o,ak=j,no=o,pm=p,pp=f,aj=p,fp=a,ea=d,no=o,gn=g,cc=c,fp=a,oo=n,ek=m,kk=d,ep=h,pk=e,bn=b',
+                        ',nk=a,an=l,ai=a,hc=h,fm=d,kn=a,eo=e,om=m,li=l,dd=m,bj=n,li=l,in=n,kj=l,nn=j,kj=l,oo=o,ib=b,gg=c,cp=p',
+                        ',cg=p,ce=g,cg=p,be=p,lp=c,je=e,eh=k,kk=h,ai=m,ni=i,an=a,om=f,ff=n,gg=l,le=h,gh=e,hb=c,hh=p,lj=l,hj=h',
+                        ',ik=l,ba=f,jk=i,ji=m,ll=i,jl=o,ae=a,im=k,ki=l,cc=o,ic=g,go=o,fa=b,gi=i,ep=p,ck=m,aa=e,ea=a,lg=l,gk=k',
+                        ',ee=l,kd=d,mi=i,ai=m,ln=h,ek=e,le=c,gn=e,gk=g,ob=f,of=b,ke=e,pf=f,bp=b,ce=n,kk=k,ma=a,aa=i,le=c,kn=n',
+                        ',jl=i,mp=k,ll=c,bf=f,km=p,nn=c,ap=f,jn=d,km=p,ao=k,bk=k,eo=f,pa=f,fa=p,fb=f,ko=a,ln=i,dd=i,ic=i,jc=j',
+                        ',ai=h,jj=j,gg=j,ed=h,bh=p,hp=b,hd=j,ih=g,pb=d,dp=a,eb=i,jb=b,di=g,dd=m,hb=g,bh=p,ee=d,pd=b,eg=a,jp=p',
+                        ',dd=j,jn=j,dd=j,jj=n,jn=j,jj=n,dn=d,dd=j,jm=d,jd=m,mm=j,jm=d,mj=d,nj=j,jn=j,dd=j,dm=n,nn=n,jj=n,nm=m',
+                        ',ae=g,ep=i,kg=k,ge=e,kp=a,ka=e,pk=a,pg=p,ii=k,ie=a,pa=k,ag=a,ka=e,kk=i,ag=a,pk=a,ai=p,ik=g,ee=k,gg=g',
+                        ',gm=o,gn=e,ej=e,mp=e,en=i,on=p,em=p,ii=j,po=b,nm=b,cn=m,ii=j,ei=n,ie=b,mn=b,bp=g,bb=m,pg=n,jb=b,jp=p'],
+                    cancel: [',ja=c,jc=o,jc=o,jo=a,ii=i,mi=m,mi=m,jj=m,jo=a,ja=c,ai=a,oi=o,jj=m,jm=i,ci=c,ci=c,oi=o,jo=a,ii=i,ji=j',
+                        ',ml=m,mo=a,mi=p,ip=m,lp=p,mi=p,pp=l,mi=p,pp=l,ml=m,ap=o,ip=m,ml=m,ap=o,mi=p,ip=m,mm=l,ma=o,op=a,mp=i',
+                        ',di=n,hg=j,hm=h,hn=d,ji=g,ii=j,hh=n,di=n,mi=i,ji=g,hd=g,hg=j,gi=d,hh=n,hg=j,mi=i,hj=i,ni=h,ji=g,hi=m',
+                        ',fk=b,fl=e,fl=e,lb=i,kb=e,bb=l,lb=i,fi=f,ib=b,fk=b,ff=i,bb=l,kb=e,fl=e,fe=l,eb=f,ff=i,fl=e,fl=e,fb=k',
+                        ',fh=g,hk=c,hd=l,ih=d,hf=g,hg=k,hl=n,kh=c,hi=d,hn=e,gh=k,he=i,dh=l,hc=h,nh=e,ch=h,eh=i,kh=c,lh=n,hh=f',
+                        ',gm=m,gf=f,og=o,gk=k,gd=d,dg=d,fg=f,gk=k,mg=m,gf=f,dg=d,gf=f,kg=k,fg=f,kg=k,gk=k,go=o,gk=k,dg=d,gg=g',
+                        ',do=a,bo=p,ho=o,ho=o,cp=d,cc=o,eo=c,ch=c,cb=a,ce=h,ao=d,oo=h,do=a,cc=o,po=b,ca=p,ao=d,cb=a,cd=b,co=e',
+                        ',nn=n,nc=c,nb=b,nc=c,nn=n,nn=n,bp=c,bp=c,nc=c,nn=n,nb=b,pp=n,pp=n,cp=b,pp=n,nb=b,nb=b,nb=b,nb=b,np=p',
+                        ',mg=k,mg=k,gg=f,jg=g,ff=j,ff=j,mg=k,ff=j,fh=k,og=h,fc=g,fm=o,hg=m,fh=k,cg=j,fk=h,fj=f,kg=o,fo=m,fg=c',
+                        ',hf=i,fe=m,mf=e,fh=i,pf=l,fn=f,ef=m,fh=i,fm=e,fp=l,fl=p,nf=f,fi=h,fi=h,hf=i,if=h,lf=p,lf=p,fp=l,ff=n'],
+                    associate: [',kf=j,pk=f,pk=f,pj=e,kf=j,pk=f,pj=e,pk=f,kf=j,pj=e,kf=j,kf=j,pj=e,kf=j,pk=f,pk=f,pj=e,kf=j,pj=e,ff=e',
+                        ',bc=d,bc=d,bc=d,mb=d,mb=d,bc=d,mb=d,md=b,mb=d,mb=d,mb=d,bc=d,md=b,bc=d,md=b,md=b,mb=d,bc=d,md=b,dc=b',
+                        ',ha=m,ha=m,ha=m,ha=m,ha=m,ha=m,hh=g,ha=m,ha=m,ha=m,ha=m,ha=m,hp=a,hp=a,ha=m,ha=m,hh=g,ha=m,hp=a,gp=m',
+                        ',bi=j,bb=i,bi=j,bj=g,bj=g,bj=g,bj=g,bb=i,bj=g,bj=g,bi=j,bb=i,bb=i,bj=g,bi=j,bj=g,bb=i,bi=j,bi=j,ii=g',
+                        ',cc=j,cp=c,cp=c,cc=j,cp=c,cc=j,cc=j,ck=p,ck=p,cc=j,ck=p,ck=p,ck=p,cc=j,cc=j,ck=p,cp=c,cp=c,cc=j,jk=c',
+                        ',eg=k,mb=e,mb=e,bg=m,bg=m,mb=e,bg=m,eg=k,eg=k,mb=e,mb=e,eg=k,eg=k,mb=e,eg=k,mb=e,eg=k,eg=k,bg=m,mm=k',
+                        ',cj=d,ce=l,cj=d,cj=d,jd=e,ce=l,jd=e,ce=l,jd=e,ce=l,ce=l,ce=l,ce=l,cj=d,ce=l,cj=d,jd=e,cj=d,cj=d,dd=l',
+                        ',de=g,md=a,md=a,ae=e,ae=e,de=g,de=g,de=g,ae=e,md=a,ae=e,de=g,ae=e,md=a,md=a,md=a,de=g,md=a,ae=e,mg=e',
+                        ',hc=d,ck=p,dk=i,dk=i,ck=p,hc=d,hc=d,ck=p,hc=d,hc=d,ck=p,ck=p,hc=d,ck=p,ck=p,hc=d,hc=d,dk=i,hc=d,hp=i',
+                        ',mm=c,me=a,mm=c,ej=m,me=a,mm=c,ej=m,mm=c,me=a,mm=c,me=a,mm=c,mm=c,ej=m,mm=c,ej=m,ej=m,mm=c,me=a,aj=c']
+                };
+
+                // Parse sequences and extract query/answer
+                function parseSequence(seqString) {
+                    const facts = seqString.split(',').filter(f => f.length > 0);
+                    const lastFact = facts[facts.length - 1];
+                    const answer = lastFact.split('=')[1];
+                    const query = lastFact.split('=')[0] + '=';
+                    const context = facts.slice(0, -1).join(', ') + ', ';
+                    return { context, query, answer, facts: facts.slice(0, -1) };
+                }
+
+                // Generate hints based on mechanism type
+                function getHint(type, query, facts) {
+                    const leftVar = query[0];
+                    const rightVar = query[1];
+                    
+                    if (type === 'copy') {
+                        return `Look carefully: Have you seen the fact "${query}" somewhere in the sequence before?`;
+                    } else if (type === 'commute') {
+                        const reversed = rightVar + leftVar;
+                        return `Check if you've seen the commutative pair: look for "${reversed}=" in the sequence.`;
+                    } else if (type === 'identity') {
+                        return `Look for facts that show one variable leaving others unchanged (like "xy=x" or "xy=y"). This reveals an identity element.`;
+                    } else if (type === 'cancel') {
+                        return `Try elimination: Find all facts with "${leftVar}" on the left and "${rightVar}" on the right. Which answers appear? Which can you rule out?`;
+                    } else if (type === 'associate') {
+                        return `Look for a chain: Can you find facts that combine associatively? For example, if you need "xy=", look for facts containing x or y that can be chained together.`;
+                    }
+                }
+
+                function getExplanation(type, query, answer) {
+                    if (type === 'copy') {
+                        return `✓ Correct! This sequence can be solved by <b>verbatim copying</b> since the exact fact "${query}${answer}" appears earlier in the sequence.`;
+                    } else if (type === 'commute') {
+                        const reversed = query[1] + query[0] + '=' + answer;
+                        return `✓ Correct! This sequence can be solved by <b>commutative copying</b>. If "${reversed}" is in the sequence, and the operation is commutative, then "${query}${answer}".`;
+                    } else if (type === 'identity') {
+                        return `✓ Correct! This sequence can be solved by <b>identity element recognition</b>. Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer.`;
+                    } else if (type === 'cancel') {
+                        return `✓ Correct! This sequence can be solved by <b>closure-based cancellation</b>. By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid.`;
+                    } else if (type === 'associate') {
+                        return `✓ Correct! This sequence can be solved by <b>associative composition</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd)= xy = z).`;
+                    }
+                }
+
+                // Build all examples
+                const allExamples = [];
+                ['copy', 'commute', 'identity', 'cancel', 'associate'].forEach(type => {
+                    rawExamples[type].forEach(seq => {
+                        const parsed = parseSequence(seq);
+                        allExamples.push({
+                            type: type,
+                            sequence: parsed.context,
+                            query: parsed.query,
+                            answer: parsed.answer,
+                            facts: parsed.facts,
+                            hint: getHint(type, parsed.query, parsed.facts),
+                            explanation: getExplanation(type, parsed.query, parsed.answer)
+                        });
+                    });
+                });
+
+                // Shuffle the examples array
+                function shuffleArray(array) {
+                    const shuffled = [...array];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
+                    return shuffled;
+                }
+
+                const shuffledExamples = shuffleArray(allExamples);
+                let currentExample = 0;
+                let scoreCorrect = 0;
+                let scoreTotal = 0;
+
+                function updateScoreDisplay() {
+                    document.getElementById('score-correct').textContent = scoreCorrect;
+                    document.getElementById('score-total').textContent = scoreTotal;
+                    const percent = scoreTotal > 0 ? Math.round((scoreCorrect / scoreTotal) * 100) : 0;
+                    document.getElementById('score-percent').textContent = percent;
+                    
+                    // Enable reset button after 10 attempts
+                    const resetButton = document.getElementById('reset-score');
+                    if (scoreTotal >= 10) {
+                        resetButton.disabled = false;
+                        resetButton.style.cursor = 'pointer';
+                        resetButton.style.opacity = '1';
+                    }
+                }
+
+                function loadExample() {
+                    const ex = shuffledExamples[currentExample];
+                    document.getElementById('demo-sequence').textContent = ex.sequence;
+                    document.getElementById('demo-query').textContent = ex.query;
+                    document.getElementById('user-answer').value = '';
+                    document.getElementById('feedback').innerHTML = '';
+                    document.getElementById('hint').style.display = 'none';
+                    document.getElementById('hint').innerHTML = '';
+                }
+
+                document.getElementById('check-answer').addEventListener('click', function() {
+                    const userAnswer = document.getElementById('user-answer').value.toLowerCase().trim();
+                    const correctAnswer = shuffledExamples[currentExample].answer.toLowerCase();
+                    const feedback = document.getElementById('feedback');
+                    
+                    if (!userAnswer) {
+                        feedback.innerHTML = '<p style="color: #856404;">Please enter an answer first.</p>';
+                        return;
+                    }
+                    
+                    // Only count if this is a new attempt (feedback is empty)
+                    if (feedback.innerHTML === '') {
+                        scoreTotal++;
+                        if (userAnswer === correctAnswer) {
+                            scoreCorrect++;
+                        }
+                        updateScoreDisplay();
+                    }
+                    
+                    if (userAnswer === correctAnswer) {
+                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">' + shuffledExamples[currentExample].explanation + '</p>';
+                    } else {
+                        feedback.innerHTML = '<p style="color: #721c24;">Not quite. The correct answer is <b>' + shuffledExamples[currentExample].answer + '</b>.</p><p>' + shuffledExamples[currentExample].explanation.replace('✓ Correct!', '') + '</p>';
+                    }
+                });
+
+                document.getElementById('show-hint').addEventListener('click', function() {
+                    const hintDiv = document.getElementById('hint');
+                    const button = document.getElementById('show-hint'); 
+                    
+                    if (hintDiv.style.display === 'none') { 
+                        hintDiv.innerHTML = '<p><b>💡 Hint:</b> ' + shuffledExamples[currentExample].hint + '</p>';
+                        hintDiv.style.display = 'block';
+                        button.textContent = 'Hide Hint';  
+                    } else {  
+                        hintDiv.style.display = 'none'; 
+                        button.textContent = 'Show Hint';  
+                    }
+                });
+
+                document.getElementById('new-example').addEventListener('click', function() {
+                    currentExample = (currentExample + 1) % shuffledExamples.length;
+                    loadExample();
+                });
+
+                document.getElementById('user-answer').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        document.getElementById('check-answer').click();
+                    }
+                });
+
+                document.getElementById('reset-score').addEventListener('click', function() {
+                    if (scoreTotal >= 10) {
+                        scoreCorrect = 0;
+                        scoreTotal = 0;
+                        updateScoreDisplay();
+                        
+                        const resetButton = document.getElementById('reset-score');
+                        resetButton.disabled = true;
+                        resetButton.style.cursor = 'not-allowed';
+                        resetButton.style.opacity = '0.5';
+                    }
+                });
+
+                // Load first example on page load
+                loadExample();
+                </script>
+
+                <h2>HEADER</h2>
+
+                <h2>Hypothesizing Model Mechanisms</h2>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/coverage.png" style="width:100%">
+                    <figcaption>
+                        Algorithmic Coverage
+                    </figcaption>
+                </figure>
+
+                <h2>Verifying Mechanisms</h2>
+
+                <h3>Copying and Commutative Copying</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Copying
+                    </figcaption>
+                </figure>
+
+                <h3>Identity Element Recognition</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Identity Element Recognition
+                    </figcaption>
+                </figure>
+
+                <h3>Closure-Based Cancellation</h3>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/" style="width:100%">
+                    <figcaption>
+                        Closure-Based Cancellation
+                    </figcaption>
+                </figure>
+
+
+                <h2>Phase Transitions</h2>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/phase_transition.png" style="width:100%">
+                    <figcaption>
+                        Phase Transitions
+                    </figcaption>
+                </figure>
+
+                
+                
+            
+
+                
+                <!-- <h2>Related Work</h2> -->
+
+                <h2 >Related Work</h2>
+
+
+                
+                <!-- <p class="citation"><a href=""><img src="images/related_work/" alt=""></a><br>
+                    <b>Notes:</b> 
+                </p>  -->
+
+                <h2>Strategies for Numeric Reasoning in Fixed-Symbol Arithmetic</h2>
+                
+
+                <p class="citation"><a href="https://arxiv.org/abs/2201.02177"><img src="images/related_work/power-grokking.png" alt="power-grokking-2022">Althea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, Vedant Misra. Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets. 2022.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2205.10343"><img src="images/related_work/liu-grokking.png" alt="liu-grokking-2022">Ziming Liu, Ouail Kitouni, Niklas Nolte, Eric Michaud, Max Tegmark, Mike Williams. Towards Understanding Grokking: An Effective Theory of Representation Learning. 2022.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2410.21272"><img src="images/related_work/nikankin-arithmetic.png" alt="nikankin-arithmetic-2025">Yaniv Nikankin, Anja Reusch, Aaron Mueller, Yonatan Belinkov. Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2406.03445"><img src="images/related_work/zhou-fourier.png" alt="zhou-fourier-2024">Tianyi Zhou, Deqing Fu, Vatsal Sharan, Robin Jia. Pre-trained Large Language Models Use Fourier Features to Compute Addition. 2024.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2301.05217"><img src="images/related_work/nanda-grokking.png" alt="nanda-grokking-2023">Neel Nanda, Lawrence Chan, Tom Lieberum, Jess Smith, Jacob Steinhardt. Progress Measures for Grokking via Mechanistic Interpretability. 2023.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2306.17844"><img src="images/related_work/zhong-pizza-clock.png" alt="zhong-clock-2023">Ziqian Zhong, Ziming Liu, Max Tegmark, Jacob Andreas. The Clock and the Pizza: Two Stories in Mechanistic Explanation of Neural Networks. 2023.</a><br>
+                    <b>Notes:</b> 
+                </p>
+
+                <p class="citation"><a href="https://arxiv.org/abs/2410.04368"><img src="images/related_work/zhong-random.png" alt="zhong-random-2024">Ziqian Zhong, Jacob Andreas. Algorithmic Capabilities of Random Transformers. 2024.</a><br>
+                    <b>Notes:</b> 
+                </p>
+
+                <p class="citation"><a href="https://arxiv.org/abs/2406.02550"><img src="images/related_work/he-double-grokking.png" alt="">Tianyu He, Darshil Doshi, Aritra Das, Andrey Gromov. Learning to Grok: Emergence of In-Context Learning and Skill Composition in Modular Arithmetic Tasks</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2510.00184"><img src="images/related_work/bai-multiplication.png" alt="">Xiaoyan Bai, Itamar Pres, Yuntian Deng, Chenhao Tan, Stuart Shieber, Fernanda Viegas, Martin Wattenberg, Andrew Lee. Why Can't Transformers Learn Multiplication? Reverse-Engineering Reveals Long-Range Dependency Pitfalls. 2025.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2505.05145"><img src="images/related_work/hu-addition-subspace.png" alt="">Xinyan Hu, Kayo Yin, Michael I. Jordan, Jacob Steinhardt, Lijie Chen. Understanding In-Context Learning of Addition via Activation Subspaces. 2025.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2410.05229"><img src="images/related_work/mirzadeh-gsm_symbolic.png" alt="">Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, Mehrdad Farajtabar. GSM-Symbolic: Understanding the Limitations of Mathematical Reasoning in Large Language Models. 2025.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                
+
+	
+                <h2>How to cite</h2>
+
+                <p>The paper can be cited as follows.
+                </p>
+
+                <div class="card">
+                    <h3 class="card-header">bibliography</h3>
+                    <div class="card-block">
+                        <p style="text-indent: -3em; margin-left: 3em;" class="card-text clickselect">
+                        Eric Todd, Jannik Brinkmann, Rohit Gandikota, and David Bau. "<em>In-Context Algebra.</em>" arXiv preprint arXiv:2512.XXXXX, (2025).
+                        </p>
+                    </div>
+                    <h3 class="card-header">bibtex</h3>
+                    <div class="card-block">
+                        <pre class="card-text clickselect">
+@article{todd2025incontextalgebra,
+    title={In-Context Algebra}, 
+    author={Eric Todd and Jannik Brinkmann and Rohit Gandikota and David Bau},
+    journal={arxiv preprint arXiv:2512.XXXXX},
+    year={2025},
+    url={https://arxiv.org/abs/2512.XXXXX}
+}</pre>
+                    </div>
+                </div>
+                <!-- </p> -->
+
+            <!-- </div> -->
+            </div> <!--col -->    
+        </div> <!--row -->
+    </div> <!-- container -->
+
+    
+
+    <footer class="nd-pagefooter">
+        <div class="row">
+            <div class="col-6 col-md text-center">
+                <a href="https://baulab.info/">About the Bau Lab</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script>
+    $(document).on('click', '.clickselect', function (ev) {
+        var range = document.createRange();
+        range.selectNodeContents(this);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    });
+</script>
+
+</html>

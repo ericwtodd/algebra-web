@@ -133,11 +133,11 @@
                 <h2>The Task: In-Context Algebra</h2>
                 
                 <p>
-                    We train transformers to predict answers to arithmetic problems sampled from a mixture of finite algebraic groups (like cyclic and dihedral groups). 
+                    We train transformers to solve arithmetic problems sampled from a mixture of finite algebraic groups (like cyclic and dihedral groups). 
                     Each task sequence presents several examples of products between elements in a group with the goal that models will learn to predict the outcome of unseen group products.
                     However, a key challenge is that <b>each token is a variable whose meaning changes between sequences</b>. 
-                    For example, the symbol "g" might represent the identity in one sequence but a 90 degree rotation in another. 
-                    Models must infer what each symbol means purely from how it interacts with other symbols in-context.
+                    For example, the symbol "g" might represent the identity in one sequence but a 90-degree rotation in another. 
+                    Models can infer what each symbol means only from how it interacts with other symbols in-context. You can try it for yourself <a href="#play-test">below</a>.
                 </p>
                 <p>
                     We generate in-context algebra sequences in three steps:
@@ -156,7 +156,7 @@
                 </figure>
                 
                 
-                <div class="card" style="max-width: 1020px; margin: 30px auto;">
+                <div id="#play-test" class="card" style="max-width: 1020px; margin: 30px auto;">
                     <div class="card-block" style="padding: 20px;">
                         <h4>Try It Yourself</h4>
                         <p>Can you predict the answer? Look at the sequence of facts below and try to figure out what comes next:</p>
@@ -166,12 +166,20 @@
                                 <span id="demo-sequence"></span><span id="demo-query" style="font-weight: bold; color: #0066cc;"></span>
                             </div>
                             
-                            <div style="margin: 20px 0;">
-                                <label for="user-answer" style="font-weight: bold;">Your answer:</label>
-                                <input type="text" id="user-answer" maxlength="1" style="width: 50px; height: 40px; font-size: 20px; text-align: center; margin: 0 10px; font-family: 'Courier New', monospace;" />
-                                <button id="check-answer" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">Check</button>
-                                <button id="show-hint" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">Show Hint</button>
-                                <button id="new-example" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">New Example</button>
+                            <div style="margin: 20px 0; display: flex; align-items: center; justify-content: space-between;">
+                                <div>
+                                    <label for="user-answer" style="font-weight: bold;">Your answer:</label>
+                                    <input type="text" id="user-answer" maxlength="1" style="width: 50px; height: 40px; font-size: 20px; text-align: center; margin: 0 10px; font-family: 'Courier New', monospace;" />
+                                    <button id="check-answer" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">Check</button>
+                                    <button id="show-hint" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">Show Hint</button>
+                                    <button id="new-example" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">New Example</button>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div id="score-display" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">
+                                        Score: <span id="score-correct">0</span> / <span id="score-total">0</span> (<span id="score-percent">0</span>%)
+                                    </div>
+                                    <button id="reset-score" style="padding: 8px 20px; font-size: 14px; cursor: not-allowed; opacity: 0.5;" disabled>Reset Score</button>
+                                </div>
                             </div>
                             
                             <div id="feedback" style="min-height: 60px; padding: 10px; margin-top: 10px;"></div>
@@ -195,8 +203,7 @@
                         ',pp=d,kn=f,ca=c,hb=g,if=f,ee=j,jf=n,nm=j,ff=e,me=f,mf=i,nn=k,km=e,me=f,ie=e,nk=f,cc=o,fn=m,hp=l,if=f',
                         ',ll=c,cc=l,hh=h,cc=l,ch=c,hl=l,lh=l,hl=l,cl=h,hl=l,hc=c,cl=h,ll=c,cc=l,ll=c,ch=c,cl=h,cl=h,lh=l,cl=h',
                         ',fh=f,ah=a,ah=a,ng=a,fn=h,hm=m,nm=g,fm=n,gg=h,nh=n,aa=m,nh=n,fg=m,af=g,hh=h,ng=a,am=h,ng=a,ha=a,fh=f'],
-                    commute: [',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o',
-                        ',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
+                    commute: [',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
                         ',jm=j,ii=j,ih=m,jj=m,ji=h,hm=h,hj=i,jj=m,jm=j,jh=i,mi=i,mm=m,jm=j,mj=j,ih=m,ii=j,ij=h,hj=i,im=i,mh=h',
                         ',gj=h,hd=d,dg=a,mn=d,gj=h,mn=d,md=g,jn=m,hh=h,gg=b,hb=b,fm=h,fg=d,bb=d,nj=m,jm=a,na=f,mg=n,ga=m,bh=b',
                         ',ph=p,nf=n,mm=h,mh=m,fl=l,il=n,gf=g,gi=f,jj=n,jg=i,in=g,gn=l,in=g,ll=f,mh=m,ph=p,fn=n,nj=f,mh=m,li=n',
@@ -205,6 +212,7 @@
                         ',ni=h,ae=j,lc=a,la=p,cd=j,ja=d,pc=l,ff=f,ea=j,da=c,pd=a,cl=a,on=i,el=d,jl=c,ed=l,ho=g,io=n,hi=n,dp=a',
                         ',nn=d,na=i,dn=n,dn=n,aa=n,in=a,na=i,nd=n,da=a,ni=a,di=i,id=i,nn=d,nd=n,da=a,ii=n,na=i,nd=n,ia=d,an=i',
                         ',ml=i,gh=i,mm=j,oa=a,ng=i,cp=d,in=k,ki=h,jh=h,jm=m,gm=h,kl=g,li=m,kg=j,dc=e,gm=h,lg=k,hh=j,mk=h,gl=k'],
+                        // ',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o', //This one might not be solvable via commutativity?
                     identity: [',dj=h,kp=e,gb=o,ak=j,no=o,pm=p,pp=f,aj=p,fp=a,ea=d,no=o,gn=g,cc=c,fp=a,oo=n,ek=m,kk=d,ep=h,pk=e,bn=b',
                         ',nk=a,an=l,ai=a,hc=h,fm=d,kn=a,eo=e,om=m,li=l,dd=m,bj=n,li=l,in=n,kj=l,nn=j,kj=l,oo=o,ib=b,gg=c,cp=p',
                         ',cg=p,ce=g,cg=p,be=p,lp=c,je=e,eh=k,kk=h,ai=m,ni=i,an=a,om=f,ff=n,gg=l,le=h,gh=e,hb=c,hh=p,lj=l,hj=h',
@@ -310,6 +318,23 @@
 
                 const shuffledExamples = shuffleArray(allExamples);
                 let currentExample = 0;
+                let scoreCorrect = 0;
+                let scoreTotal = 0;
+
+                function updateScoreDisplay() {
+                    document.getElementById('score-correct').textContent = scoreCorrect;
+                    document.getElementById('score-total').textContent = scoreTotal;
+                    const percent = scoreTotal > 0 ? Math.round((scoreCorrect / scoreTotal) * 100) : 0;
+                    document.getElementById('score-percent').textContent = percent;
+                    
+                    // Enable reset button after 10 attempts
+                    const resetButton = document.getElementById('reset-score');
+                    if (scoreTotal >= 10) {
+                        resetButton.disabled = false;
+                        resetButton.style.cursor = 'pointer';
+                        resetButton.style.opacity = '1';
+                    }
+                }
 
                 function loadExample() {
                     const ex = shuffledExamples[currentExample];
@@ -329,6 +354,15 @@
                     if (!userAnswer) {
                         feedback.innerHTML = '<p style="color: #856404;">Please enter an answer first.</p>';
                         return;
+                    }
+                    
+                    // Only count if this is a new attempt (feedback is empty)
+                    if (feedback.innerHTML === '') {
+                        scoreTotal++;
+                        if (userAnswer === correctAnswer) {
+                            scoreCorrect++;
+                        }
+                        updateScoreDisplay();
                     }
                     
                     if (userAnswer === correctAnswer) {
@@ -360,6 +394,19 @@
                 document.getElementById('user-answer').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         document.getElementById('check-answer').click();
+                    }
+                });
+
+                document.getElementById('reset-score').addEventListener('click', function() {
+                    if (scoreTotal >= 10) {
+                        scoreCorrect = 0;
+                        scoreTotal = 0;
+                        updateScoreDisplay();
+                        
+                        const resetButton = document.getElementById('reset-score');
+                        resetButton.disabled = true;
+                        resetButton.style.cursor = 'not-allowed';
+                        resetButton.style.opacity = '0.5';
                     }
                 });
 
