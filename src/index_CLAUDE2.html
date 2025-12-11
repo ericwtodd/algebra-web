@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>In-Context Algebra</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description"
+        content="Understanding how transformers learn to solve algebra problems when tokens act as variables" />
+    <meta property="og:title" content="In-Context Algebra" />
+    <meta property="og:url" content="https://algebra.baulab.info/" />
+    <meta property="og:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <meta property="og:description" content="Transformers use symbolic algorithms to solve math problems when tokens are variables whose meaning can only be inferred in-context.">
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="In-Context Algebra" />
+    <meta name="twitter:description"
+        content="Understanding the learned algorithms of transformer language models solving abstract algebra problems through in-context learning." />
+    <meta name="twitter:image" content="https://algebra.baulab.info/images/algebra-thumb.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Math&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+
+    <style>
+        .relatedthumb {
+            float: left;
+            width: 200px;
+            margin: 3px 10px 7px 0;
+        }
+
+        .relatedblock {
+            clear: both;
+            display: inline-block;
+        }
+
+        .bold-sc {
+            font-variant: small-caps;
+            font-weight: bold;
+        }
+
+        .cite,
+        .citegroup {
+            margin-bottom: 8px;
+        }
+
+        :target {
+            background-color: yellow;
+        }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FD12LWN557"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date()); gtag('config', 'G-FD12LWN557');
+    </script>
+
+</head>
+
+<body class="nd-docs">
+    <div class="nd-pageheader">
+        <div class="container">
+            <h1 class="lead">
+                <nobr class="widenobr">In-Context Algebra</nobr>
+            </h1>
+            <address>
+                <nobr><a href="https://ericwtodd.github.io/" target="_blank">Eric Todd</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://www.jannikbrinkmann.com/" target="_blank">Jannik Brinkmann</a><sup>1,2</sup>,</nobr>
+                <nobr><a href="https://rohitgandikota.github.io/" target="_blank">Rohit Gandikota</a><sup>1</sup>,</nobr>
+                <nobr><a href="https://baulab.info/" target="_blank">David Bau</a><sup>1</sup></nobr><br>
+                <nobr><sup>1</sup><a href="https://khoury.northeastern.edu/" target="_blank">Northeastern University</a>,</nobr>
+                <nobr><sup>2</sup><a href="https://www.tu-clausthal.de/en/" target="_blank">Technical University Clausthal</a></nobr>
+            </address>
+        </div>
+    </div><!-- end nd-pageheader -->
+
+    <div class="container">
+        <div class="row justify-content-center text-center">
+
+            <p>
+                <a href="https://arxiv.org/abs/2512.XXXXX" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/paper-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="ArXiv Preprint thumbnail" data-nothumb="">
+                    <br>ArXiv<br>Preprint</a>
+                <a href="https://github.com/ericwtodd/algebra" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/code-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Github code thumbnail" data-nothumb="">
+                    <br>Source Code<br>Github
+                </a>
+                <a href="https://algebra.baulab.info/data" class="d-inline-block p-3 align-top" target="_blank">
+                    <img height="100" width="78" src="images/data-thumb.png" style="border:1px solid; margin: 0 38px;"
+                        alt="Dataset thumbnail" data-nothumb="">
+                    <br>Data<br>
+                </a>
+
+            </p>
+
+            <div class="card" style="max-width: 1020px;">
+                <div class="card-block">
+                <h3>What Do Transformers Learn Without Meaningful Token Embeddings?</h3>
+                <p>
+                    Much of the performance of language models can be attributed to the power of token embeddings—prior work has shown that embeddings can pre-encode rich semantic, syntactic, and numeric structure.
+                    However, the hallmark of <b>abstract reasoning</b> is the ability to work with words and symbols whose meaning is unknown ahead of time.
+                </p>
+                <p>
+                    In this paper, we design an in-context learning setting to study the computational strategies that transformers develop to solve abstract arithmetic tasks.
+                    What makes our setting unique is that <b>each token is a variable</b> that can represent any algebraic element, and <b>tokens acquire meaning only through their interactions within a sequence.</b>
+                    In contrast to the geometric representations learned for numeric reasoning seen in prior work (where token meanings are fixed), we find that models develop symbolic reasoning mechanisms based on sparse relational patterns. 
+                    This suggests that the kind of reasoning strategies learned by transformers depend on the task structure.
+                </p>
+                </div><!--card-block-->
+                </div><!--card-->
+
+        </div><!--row-->
+
+        <div class="row">
+            <div class="col">
+
+                <h2>The Task: In-Context Algebra</h2>
+                
+                <p>We train transformers to predict answers to arithmetic problems sampled from finite algebraic groups (like cyclic and dihedral groups). The key challenge: <b>each token is a variable whose meaning changes between sequences</b>. For example, the symbol "a" might represent the number 3 in one sequence but the number 7 in another. Models must infer what each symbol means purely from how it interacts with other symbols in context.</p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/data_assign_generate.gif" class="smallfig" style="width:100%">
+                    <figcaption>
+                        <b>Data Generation Process.</b> Each sequence is generated by: (1) sampling a set of algebraic groups, (2) randomly assigning vocabulary symbols to group elements, and (3) sampling facts from these groups. The same vocabulary symbol can mean different things across sequences, forcing the model to reason in-context.
+                    </figcaption>
+                </figure>
+
+                <h2>Can Transformers Learn This Task?</h2>
+
+                <p>Surprisingly, yes! Models achieve near-perfect accuracy and even generalize to unseen algebraic structures. However, they develop fundamentally different strategies than those observed in previous work on arithmetic reasoning.</p>
+
+                <h2>Mechanisms: From Hypotheses to Verification</h2>
+
+                <p>We identify specific algorithms the model could use, then design targeted data distributions to test each hypothesis. We find evidence for three primary mechanisms beyond verbatim copying:</p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/coverage.png" style="width:100%">
+                    <figcaption>
+                        <b>Algorithmic Coverage.</b> The percentage of training data that can theoretically be solved by each mechanism. Copying mechanisms (green, purple) cover most cases, but identity recognition (yellow) and closure-based cancellation (red) handle substantial portions when copying isn't possible.
+                    </figcaption>
+                </figure>
+
+                <h3>1. Commutative Copying</h3>
+
+                <p>Beyond simple verbatim copying, the model learns to recognize when facts are commutative. A dedicated attention head (layer 3, head 6) copies answers from commutative pairs: if it has seen "ab=c" and the query is "ba=", it correctly predicts "c".</p>
+
+                <h3>2. Identity Element Recognition</h3>
+
+                <p>The model learns to identify and use identity elements (elements where e·x = x·e = x for all x). This emerges from two complementary submechanisms:</p>
+                <ul>
+                    <li><b>Query Promotion:</b> Head 3.1 promotes both variables in the query as potential answers</li>
+                    <li><b>Identity Demotion:</b> Head 3.6 suppresses the identity element's logit</li>
+                </ul>
+                <p>Together, these mechanisms correctly predict the non-identity variable as the answer.</p>
+
+                <h3>3. Closure-Based Cancellation</h3>
+
+                <p>The model tracks which variables belong to the same algebraic group (the "closure") and systematically eliminates invalid answers using the cancellation law. This is implemented through learned subspaces that represent:</p>
+                <ul>
+                    <li><b>Closure set:</b> All variables that have appeared together in the context</li>
+                    <li><b>Elimination set:</b> Variables that should be ruled out based on contradicting facts</li>
+                </ul>
+                <p>The model computes the set difference to identify the correct answer.</p>
+
+                <h2>Phase Transitions During Training</h2>
+
+                <p>Models learn discrete skills in a consistent order, marked by distinct drops in training loss:</p>
+
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/phase_transition.png" style="width:100%">
+                    <figcaption>
+                        <b>Phase Transitions Correspond to Skill Acquisition.</b> Training exhibits distinct stages: (1) structural tokens, (2) closure computation and query promotion, (3) copying mechanisms, (4) identity recognition and cancellation, and finally (5) associative composition. Each drop in loss corresponds to learning a new algorithmic skill.
+                    </figcaption>
+                </figure>
+
+                <ol>
+                    <li><b>Structural tokens:</b> Learning to predict "=" and ","</li>
+                    <li><b>Closure computation:</b> Understanding that combining elements yields valid group members</li>
+                    <li><b>Copying:</b> First verbatim, then commutative copying</li>
+                    <li><b>Identity & Cancellation:</b> Learned jointly, as both use similar "demotion" submechanisms</li>
+                    <li><b>Associativity:</b> Emerges last, with limited success (~60% accuracy)</li>
+                </ol>
+
+                <h2>Key Takeaway: Symbolic vs. Geometric Reasoning</h2>
+
+                <p>Previous work found that transformers learn <b>geometric representations</b> (like Fourier features) for arithmetic with fixed-meaning tokens. Our work shows that when token meanings vary contextually, models instead develop <b>symbolic mechanisms</b> based on sparse relational patterns—copying, identity rules, and elimination through cancellation.</p>
+
+                <p>This suggests that the reasoning strategies learned by transformers are shaped by the structure of the task: geometric when meanings are fixed, symbolic when meanings must be inferred in context.</p>
+                
+                <h2>Related Work</h2>
+
+                <h3>Arithmetic Reasoning in Fixed-Symbol Settings</h3>
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2201.02177"><img src="images/related_work/power-grokking.png" alt="power-grokking-2022">Althea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, Vedant Misra. <em>Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets.</em> 2022.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2205.10343"><img src="images/related_work/liu-grokking.png" alt="liu-grokking-2022">Ziming Liu, Ouail Kitouni, Niklas Nolte, Eric Michaud, Max Tegmark, Mike Williams. <em>Towards Understanding Grokking: An Effective Theory of Representation Learning.</em> 2022.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2410.21272"><img src="images/related_work/nikankin-arithmetic.png" alt="nikankin-arithmetic-2025">Yaniv Nikankin, Anja Reusch, Aaron Mueller, Yonatan Belinkov. <em>Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics.</em> 2025.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2406.03445"><img src="images/related_work/zhou-fourier.png" alt="zhou-fourier-2024">Tianyi Zhou, Deqing Fu, Vatsal Sharan, Robin Jia. <em>Pre-trained Large Language Models Use Fourier Features to Compute Addition.</em> 2024.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2301.05217"><img src="images/related_work/nanda-grokking.png" alt="nanda-grokking-2023">Neel Nanda, Lawrence Chan, Tom Lieberum, Jess Smith, Jacob Steinhardt. <em>Progress Measures for Grokking via Mechanistic Interpretability.</em> 2023.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2306.17844"><img src="images/related_work/zhong-pizza-clock.png" alt="zhong-clock-2023">Ziqian Zhong, Ziming Liu, Max Tegmark, Jacob Andreas. <em>The Clock and the Pizza: Two Stories in Mechanistic Explanation of Neural Networks.</em> 2023.</a><br>
+                </p>
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2410.04368"><img src="images/related_work/zhong-random.png" alt="zhong-random-2024">Ziqian Zhong, Jacob Andreas. <em>Algorithmic Capabilities of Random Transformers.</em> 2024.</a><br>
+                </p>
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2406.02550"><img src="images/related_work/he-double-grokking.png" alt="he-grokking-2024">Tianyu He, Darshil Doshi, Aritra Das, Andrey Gromov. <em>Learning to Grok: Emergence of In-Context Learning and Skill Composition in Modular Arithmetic Tasks.</em> 2024.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2510.00184"><img src="images/related_work/bai-multiplication.png" alt="bai-multiplication-2025">Xiaoyan Bai, Itamar Pres, Yuntian Deng, Chenhao Tan, Stuart Shieber, Fernanda Viegas, Martin Wattenberg, Andrew Lee. <em>Why Can't Transformers Learn Multiplication? Reverse-Engineering Reveals Long-Range Dependency Pitfalls.</em> 2025.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2505.05145"><img src="images/related_work/hu-addition-subspace.png" alt="hu-addition-2025">Xinyan Hu, Kayo Yin, Michael I. Jordan, Jacob Steinhardt, Lijie Chen. <em>Understanding In-Context Learning of Addition via Activation Subspaces.</em> 2025.</a><br>
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/pdf/2410.05229"><img src="images/related_work/mirzadeh-gsm_symbolic.png" alt="mirzadeh-gsm-2025">Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, Mehrdad Farajtabar. <em>GSM-Symbolic: Understanding the Limitations of Mathematical Reasoning in Large Language Models.</em> 2025.</a><br>
+                </p> 
+                                                                                        
+                <p class="citation"><a href="https://arxiv.org/pdf/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. <em>Language Models Use Trigonometry to do Addition.</em> 2025.</a><br>
+                </p> 
+
+	
+                <h2>How to Cite</h2>
+
+                <p>The paper can be cited as follows:</p>
+
+                <div class="card">
+                    <h3 class="card-header">bibliography</h3>
+                    <div class="card-block">
+                        <p style="text-indent: -3em; margin-left: 3em;" class="card-text clickselect">
+                        Eric Todd, Jannik Brinkmann, Rohit Gandikota, and David Bau. "<em>In-Context Algebra.</em>" arXiv preprint arXiv:2512.XXXXX (2025).
+                        </p>
+                    </div>
+                    <h3 class="card-header">bibtex</h3>
+                    <div class="card-block">
+                        <pre class="card-text clickselect">
+@article{todd2025incontextalgebra,
+    title={In-Context Algebra}, 
+    author={Eric Todd and Jannik Brinkmann and Rohit Gandikota and David Bau},
+    journal={arXiv preprint arXiv:2512.XXXXX},
+    year={2025},
+    url={https://arxiv.org/abs/2512.XXXXX}
+}</pre>
+                    </div>
+                </div>
+
+            </div> <!--col -->    
+        </div> <!--row -->
+    </div> <!-- container -->
+
+    
+
+    <footer class="nd-pagefooter">
+        <div class="row">
+            <div class="col-6 col-md text-center">
+                <a href="https://baulab.info/">About the Bau Lab</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+<script>
+    $(document).on('click', '.clickselect', function (ev) {
+        var range = document.createRange();
+        range.selectNodeContents(this);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    });
+</script>
+
+</html>
