@@ -176,7 +176,7 @@
                 
                 <div id="playtest" class="card" style="max-width: 1020px; margin: 30px auto;">
                     <div class="card-block" style="padding: 20px;">
-                        <h4>Try It Yourself</h4>
+                        <h3>Try It Yourself</h3>
                         <p>Can you predict the answer? Look at the sequence of facts below and try to figure out what comes next:</p>
                         
                         <div id="interactive-demo" style="margin: 20px 0;">
@@ -430,13 +430,13 @@
                 loadExample();
                 </script>
 
-                <h4>Sequence Generation</h4>
+                <h3>Sequence Generation</h3>
                 <p>
                     We generate in-context algebra sequences in three steps:
                     <ol>
                         <li>Sample a set of algebraic groups with total order less than or equal to the number of variable tokens. </li>
-                        <li>Assign each sampled group element a variable token using a random one-to-one mapping.</li>
-                        <li>Sample facts from the randomly sampled groups, convert facts into to variable statements, and concatenate them together into a sequence.</li>
+                        <li>Assign a variable token to each group element using a random one-to-one mapping.</li>
+                        <li>Sample facts from the randomly sampled groups, convert facts into variable statements, and concatenate them together into a sequence.</li>
                     </ol>
                 </p>
                 <p class="text-center">
@@ -454,8 +454,8 @@
                 </p>
 
                 <h2>Hypothesizing Model Mechanisms</h2>
-
-                <p>As you probably saw when <a href="#playtest">trying to solve</a> different sequences, it's possible that multiple algorithms could theoretically produce correct predictions. 
+                <p>
+                   As you probably saw when <a href="#playtest">trying to solve</a> different sequences, it's possible that multiple algorithms could theoretically produce correct predictions. 
                    This can make it challenging to identify which mechanisms the model actually implements. 
                    To disambiguate potential mechanisms, we design five targeted data distributions to test specific algorithms that <i>can</i> solve algebra sequences when a corresponding set of facts is present in the context:
                    <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>, and <span class="mechanism-badge badge-associate">Associative Composition</span>.
@@ -471,41 +471,70 @@
                 </p>
 
                 <h2>Verifying Mechanisms</h2>
-                Based on the results above, we investigate how the model implements the algorithms with stronger empirical evidence: <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, and <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>. 
-                The results in this section are based on a single representative model, though we see <a href="#phase-transitions">similar results across training runs</a>.
+                <p>
+                    Based on the results above, we investigate how the model implements the algorithms with stronger empirical evidence: <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, and <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>. 
+                    The results in this section are based on a single representative model, though we see <a href="#phase-transitions">similar results across training runs</a>.
+                </p>
 
                 <h3>Copying and Commutative Copying</h3>
-
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/copy.png" style="width:100%">
-                </figure>
-
-                We identify a single attention head (layer 3, head 6) primarily responsible for copying answers from context. 
-                This head can perform both verbatim copying (when an exact duplicate fact exists) and commutative copying (when a commutative pair exists, e.g., copying "ba = c" when the query is "ab =").
-
-                 Attention patterns (a-d) and logit contributions (e-h) of the copying head across different contexts. 
-                 (a,e) With verbatim copying possible, the head attends to and promotes the duplicate fact. 
-                 (b,f) Without exact duplicates, it shifts to commutative facts. 
-                 (c,g) When neither is available, it self-attends and doesn't strongly promote any token. 
-                 (d,h) When we inject a corrupted fact, it attends to both answers, showing it blindly copies what it attends to.
-
-                <h3>Identity Element Recognition</h3>
-
-                <figure class="center_image" style="margin-top: 30px">
-                    <img src="images/paper/" style="width:100%">
                     <figcaption>
-                        Identity Element Recognition
+                        <b>Copying Mechansims:</b> Attention patterns (a-d) and direct logit contributions (e-h) of the copying head across different contexts. 
+                        (a,e) With verbatim copying possible, the head attends to and promotes the duplicate fact. 
+                        (b,f) Without exact duplicates, it shifts to commutative facts. 
+                        (c,g) When neither is available, it self-attends and doesn't strongly promote any token. 
+                        (d,h) When we inject a corrupted fact with a duplicate product, it attends to both answers, and blindly copies what it attends to.
                     </figcaption>
                 </figure>
+                <p>
+                    We find a single attention head is primarily responsible for copying answers from context, similar to the induction heads from <a href="https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html">(Olsson et al., 2022)</a> or n-gram heads seen in <a href="https://arxiv.org/abs/2401.12973">(Aky&uumlrek et al., 2024)</a>.                
+                    This head performs both verbatim copying (when an exact duplicate fact exists) and commutative copying (when a commutative pair exists, e.g., copying "ba = <u>c</u>" when the query is "ab =").
+                    However, because not all products are commutative (in dihedral groups), this copying heuristic can't always solve a sequence, and additional mechanisms described below refine the prediction.
+                </p>
+
+
+                <h3>Identity Element Recognition</h3>
+                <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/identity.png" style="width:100%">
+                    <figcaption>
+                        <b>Identity Recognition:</b> (a) PCA decomposition of fact hidden states at the final attention layer reveals a clear separation of identity facts (blue) and non-identity facts (red).
+                        (b) Head 3.1 promotes the logits of both variables in the query ($a$ and $e$), while head 3.6 demotes the logit of the identity variable, $e$.
+                        (c) PCA steering on its own can induce identity behavior, but it promotes both variables in the query to have near-equal logits.
+                        Inserting a false identity fact for either query variable triggers identity demotion, which, along with PCA steering, achieves cleaner identity control.
+                    </figcaption>
+                </figure>
+                <p>
+                    The model learns to represent facts with identity elements differently from other facts, which can be seen clearly when using PCA on the model's hidden states.
+                    The model solves identity facts from the interaction of two complementary mechanisms: <strong>query promotion</strong> which promotes both variables in the question as potential answers, and <strong>identity demotion</strong> which attends to and suppresses the known identity element.
+                    When both activate simultaneously, the non-identity token is correctly selected.
+                </p>
 
                 <h3>Closure-Based Cancellation</h3>
-
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/" style="width:100%">
                     <figcaption>
                         Closure-Based Cancellation
                     </figcaption>
                 </figure>
+                <!-- <figure class="center_image" style="margin-top: 30px">
+                    <img src="images/paper/cancellation-mechanism.png" style="width:100%">
+                    <figcaption>
+                        <strong>Closure-Based Cancellation:</strong> The model computes valid answers as the set difference 
+                        (Closure - Elimination). When predicting the right-slot, the model produces uniform logits over all previously 
+                        associated variables, confirming it has learned to compute group closure. We can causally intervene on learned 
+                        subspaces to manipulate both closure and elimination sets.
+                    </figcaption>
+                </figure> -->
+
+                <p>
+                    When copying isn't possible, the model uses a sophisticated elimination strategy. It tracks which variables belong 
+                    to the same algebraic group (the <em>closure</em>) and systematically eliminates invalid answers using the cancellation 
+                    law. We discover this mechanism by training subspaces that causally represent the closure and elimination sets, achieving 
+                    99.8% intervention accuracy.
+                </p>
+
+                
 
 
                 <h2 id="phase-transitions">Phase Transitions Correspond to Learning of Discrete Skills</h2>
