@@ -144,13 +144,13 @@
                 <h3>How Do Transformers Reason About Variables In-Context?</h3>
                 <p>
                     Much of the performance of language models (LMs) can be attributed to the power of token embeddings;
-                    <a href="#related-work">prior work</a> has shown that token embeddings can pre-encode rich semantic, syntactic, and numeric structure. <!-- <a href="https://arxiv.org/abs/2406.03445">(Zhou et al., 2024)</a>-->
+                    prior work has shown that token embeddings can pre-encode rich semantic, syntactic, and numeric structure. <!-- <a href="https://arxiv.org/abs/2406.03445">(Zhou et al., 2024)</a>-->
                     However, the hallmark of <b>abstract reasoning</b> is the ability to work with words and symbols whose meaning is unknown ahead of time.
                 </p>
                 <p>
                     In this paper, we design an in-context learning setting to study the computational strategies that transformers develop to solve abstract arithmetic tasks.
                     What makes our setting unique is that <b>each token is a variable</b> that can represent any algebraic element, and <b>tokens acquire meaning only through their interactions within a sequence.</b>
-                    In contrast to the geometric representations learned for numeric reasoning seen in prior work (where token meanings are fixed), we find that models develop symbolic reasoning mechanisms based on sparse relational patterns. 
+                    In contrast to the geometric representations learned for numeric reasoning seen in <a href="#related-work">prior work</a> (where token meanings are fixed), we find that models develop symbolic reasoning mechanisms based on sparse relational patterns. 
                     Our findings suggest that the kinds of reasoning strategies learned by transformers are dependent on the task structure.
                     <!-- We identify three primary algorithmic strategies models consistently employ beyond verbatim copying to solve the in-context algebra task: commutative copying, identity element recognition, and closure-based cancellation.-->
                 </p>
@@ -292,16 +292,16 @@
 
                 function getExplanation(type, query, answer) {
                     if (type === 'copy') {
-                        return `✓ Correct! This sequence can be solved by <b>verbatim copying</b> since the exact fact "${query}${answer}" appears earlier in the sequence.`;
+                        return `Correct! This sequence can be solved by <b>verbatim copying</b> since the exact fact "${query}${answer}" appears earlier in the sequence.`;
                     } else if (type === 'commute') {
                         const reversed = query[1] + query[0] + '=' + answer;
-                        return `✓ Correct! This sequence can be solved by <b>commutative copying</b>. If "${reversed}" is in the sequence, and the operation is commutative, then "${query}${answer}".`;
+                        return `Correct! This sequence can be solved by <b>commutative copying</b>. If "${reversed}" is in the sequence, and the operation is commutative, then "${query}${answer}".`;
                     } else if (type === 'identity') {
-                        return `✓ Correct! This sequence can be solved by <b>identity element recognition</b>. Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer.`;
+                        return `Correct! This sequence can be solved by <b>identity element recognition</b>. Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer.`;
                     } else if (type === 'cancel') {
-                        return `✓ Correct! This sequence can be solved by <b>closure-based cancellation</b>. By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid.`;
+                        return `Correct! This sequence can be solved by <b>closure-based cancellation</b>. By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid.`;
                     } else if (type === 'associate') {
-                        return `✓ Correct! This sequence can be solved by <b>associative composition</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd)= xy = z).`;
+                        return `Correct! This sequence can be solved by <b>associative composition</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd)= xy = z).`;
                     }
                 }
 
@@ -512,9 +512,11 @@
 
                 <h3>Closure-Based Cancellation</h3>
                 <figure class="center_image" style="margin-top: 30px">
-                    <img src="images/paper/" style="width:100%">
+                    <img src="images/paper/closure-1.png" style="width:100%">
                     <figcaption>
-                        Closure-Based Cancellation
+                        <b>Closure Submechanism</b>. When predicting the right-slot of a fact, the model produces nearly uniform logits over all variables previously associated with the left-slot in the context.
+                        Here, we show the logits at the left-slot for the same sequence that differs only in the final query fact (hc =, vs. bi =). 
+                        For different left-slot variables (h vs. b), the model produces higher logits over either (a) the six elements connected to h: {c, e, f, h, n, p} (shown in red), or (b) the four variables associated with b: {a, b, i, l} (shown in blue).
                     </figcaption>
                 </figure>
                 <!-- <figure class="center_image" style="margin-top: 30px">
@@ -541,6 +543,7 @@
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/phase_transition.png" style="width:100%">
                 </figure>
+                <p>
                 We find that models undergo a similar sequence of phase transitions during training across different seeds and configurations.
                 Models first learn to <b>(1) predict structural tokens</b>, followed quickly by <b>(2) learning to compute group closure</b>: learning that combining two group elements always yields another valid group element.
                 At the same time, the model learns the <b>(3) query promotion submechanism</b>, achieving around 50% on identity sequences.
@@ -551,23 +554,19 @@
                 
                 Later mechanisms emerge more gradually. The model develops \textbf{identity recognition}, steadily improving on identity-related facts 
                 Once the model can retrieve facts from context, it quickly learns to solve both identity and cancellation facts at the same time. 
-                We hypothesize these are learned jointly because the <b>(6) elimination subspace</b> and the <b>(7) identity demotion mechanism </b> perform similar functions, and their ``promotion" submechanism counterparts are learned at similar times earlier in training.
+                We hypothesize these are learned jointly because the <b>(6) elimination subspace</b> and the <b>(7) identity demotion mechanism </b> perform similar functions, and their "promotion" submechanism counterparts are learned at similar times earlier in training.
+                
                 
                 Finally, models begin to solve some associative sequences, though this happ. 
                 This learning trajectory suggests that models acquire discrete skills in a particular order, building on previously learned mechanisms to learn more complex ones. 
+                </p>
                 
-                
-
-
                 <h2 id="related-work">Related Work</h2>
+                <p>
                 Our work builds on insights from a growing body of research investigating how transformers learn to perform numeric reasoning tasks, both in small models trained on algorithmic tasks and in large pre-trained language models.
-                
+                </p>
 
-                <!-- <p class="citation"><a href=""><img src="images/related_work/" alt=""></a><br>
-                    <b>Notes:</b> 
-                </p>  -->
-
-                <h2>Numeric Reasoning in Small Transformers</h2>
+                <h3>Numeric Reasoning in Small Transformers</h3>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2201.02177"><img src="images/related_work/power-grokking.png" alt="power-grokking-2022">Althea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, Vedant Misra. Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets. 2022.</a><br>
                     <b>Notes:</b> The first paper to identify and analyze "grokking", where transformers suddenly generalize after extended training. They find model outputs often reflect the structure of the underlying algorithmic task. 
@@ -583,39 +582,49 @@
 
                 <p class="citation"><a href="https://arxiv.org/abs/2410.04368"><img src="images/related_work/zhong-random.png" alt="zhong-random-2024">Ziqian Zhong, Jacob Andreas. Algorithmic Capabilities of Random Transformers. 2024.</a><br>
                     <b>Notes:</b> Transformers with trained token embeddings, but otherwise frozen random weights can still implement familiar geometric solutions to solve algorithmic problems, including Fourier token embedddings for modular arithmetic.
-                    
                 </p>
 
-                <p class="citation"><a href="https://arxiv.org/abs/2406.02550"><img src="images/related_work/he-double-grokking.png" alt="">Tianyu He, Darshil Doshi, Aritra Das, Andrey Gromov. Learning to Grok: Emergence of In-Context Learning and Skill Composition in Modular Arithmetic Tasks</a><br>
-                    <b>Notes:</b> 
+                <p class="citation"><a href="https://arxiv.org/abs/2406.02550"><img src="images/related_work/he-double-grokking.png" alt="he-learning-2024">Tianyu He, Darshil Doshi, Aritra Das, Andrey Gromov. Learning to Grok: Emergence of In-Context Learning and Skill Composition in Modular Arithmetic Tasks. 2024</a><br>
+                    <b>Notes:</b> This work investigates in-context learning in transformers using modular arithmetic tasks, demonstrating that models transition from memorization to algorithmic generalization (inferring latent task parameters) as the number of tasks shown during pretraining increases.
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2510.00184"><img src="images/related_work/bai-multiplication.png" alt="">Xiaoyan Bai, Itamar Pres, Yuntian Deng, Chenhao Tan, Stuart Shieber, Fernanda Viegas, Martin Wattenberg, Andrew Lee. Why Can't Transformers Learn Multiplication? Reverse-Engineering Reveals Long-Range Dependency Pitfalls. 2025.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> Models can learn multiplication via implicit chain-of-thought because they learn to represent numbers using a Fourier basis and represent partial products for long-range computations, while standard fine-tuning does not induce these behaviors and thus fails to solve multiplication.
                 </p> 
 
-                <h2>Numeric Reasoning in Pre-Trained LLMs</h2>
+                <h3>Numeric Reasoning in Pre-Trained LLMs</h3>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2406.03445"><img src="images/related_work/zhou-fourier.png" alt="zhou-fourier-2024">Tianyi Zhou, Deqing Fu, Vatsal Sharan, Robin Jia. Pre-trained Large Language Models Use Fourier Features to Compute Addition. 2024.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> Demonstrates that LLMs use Fourier features encoded in their hidden states to solve addition problems. Appropriate pretraining teaches models to better encode Fourier features in number token embeddings.
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2410.21272"><img src="images/related_work/nikankin-arithmetic.png" alt="nikankin-arithmetic-2025">Yaniv Nikankin, Anja Reusch, Aaron Mueller, Yonatan Belinkov. Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics. 2025.</a><br>
-                    <b>Notes:</b> The authors show that standard pre-trained LLMs use a "bag of heuristics" to solve arithmetic problems - a mix of task-specific, but locally generalizable .
+                    <b>Notes:</b> The authors show that pre-trained LLMs use a "bag of heuristics" to solve arithmetic problems. They characterize heuristics that task-specific MLP neurons implement (e.g.,  number ranges, modulo, and other patterns), which together produce correct arithmetic answers.
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2505.05145"><img src="images/related_work/hu-addition-subspace.png" alt="">Xinyan Hu, Kayo Yin, Michael I. Jordan, Jacob Steinhardt, Lijie Chen. Understanding In-Context Learning of Addition via Activation Subspaces. 2025.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> This work studies how LLMs perform addition in-context (add-k), and isolate a low-rank subspace relevant for the task.
+                    They find the dimensions correspond to tracking the unit digit with trigonometric functions at periods of 2,5 and 10, as well as its magnitude.
+                    They identify a self-correction mechanism where later examples suppress errors from earlier demonstrations, improving the prediction.
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> This paper investigates how LLMs compute addition, and show that pretrained LLMs represent numbers as a generalized helix which is implicated in various computations for mathematical problem solving. The helix can be manipulated using the "clock" algorithm to perform addition.
                 </p> 
 
-                
+                <h3>Variable versus Value Processing in LLMs</h3>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2410.05229"><img src="images/related_work/mirzadeh-gsm_symbolic.png" alt="">Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, Mehrdad Farajtabar. GSM-Symbolic: Understanding the Limitations of Mathematical Reasoning in Large Language Models. 2025.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> Introduces GSM-symbolic, a variant of GSM8K (<a href="https://arxiv.org/abs/2110.14168">Cobbe et al., 2021</a>) that uses symbolic templates to generate a more diverse set of grade school math problems. They find LLM performance has high variance to rephrasings and lacks robustness to changes in numeric values of simple math problems.
+                </p> 
+
+                <p class="citation"><a href="https://aclanthology.org/2025.findings-acl.656/"><img src="images/related_work/calais-disentangle.png" alt="">Pedro Calais, Gabriel Franco, Zilu Tang, Themistoklis Nikas, Wagner Meira Jr., Evimaria Terzi, Mark Crovella. Disentangling Text and Math in Word Problems: Evidence for the Bidimensional Structure of Large Language Models’ Reasoning. 2025.</a><br>
+                    <b>Notes:</b> The authors investigate word problems by separating text interpretation from equation-solving. They find that small LLMs struggle significantly more with text comprehension than with solving purely expressed math equations.
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2505.23701"><img src="images/related_work/cheng-abstract.png" alt="">Ziling Cheng, Meng Cao, Leila Pishdad, Yanshuai Cao, Jackie Chi Kit Cheung. Can LLMs Reason Abstractly Over Math Word Problems Without CoT?
+Disentangling Abstract Formulation From Arithmetic Computation. 2025.</a><br>
+                    <b>Notes:</b> This paper studies abstract formulation versus arithmetic computation in simple word problems (GSM8K). They find LLMs are better at generating variable-based solutions to word problems compared to executing exact arithmetic computations.
                 </p> 
 
                 
