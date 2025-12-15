@@ -445,8 +445,8 @@
 
                 <h2>Can Transformers Learn This Task?</h2>
                 <p>
-                    Models achieve near-perfect hold-out accuracy for in-distribution cyclic groups ((a) in the figure) and dihedral groups ((b) in the figure).
-                    In general, hold-out performance improves as more facts are given as context to the model. More interesting is the model's generalization to unseen algebraic groups ((c) in the figure).
+                    Models achieve near-perfect hold-out accuracy for in-distribution groups: (a) cyclic groups and (b) dihedral groups.
+                    In general, hold-out performance improves as more facts are given as context to the model. More surprising is the model's generalization to (c) unseen algebraic groups.
                     Models also perform well on semigroups, but worse on quasigroups and collapse on magmas (also shown in (c)).
                 </p>
                 <p class="text-center">
@@ -457,7 +457,7 @@
                 <p>
                    As you probably saw when <a href="#playtest">trying to solve</a> different sequences, it's possible that multiple algorithms could theoretically produce correct predictions. 
                    This can make it challenging to identify which mechanisms the model actually implements. 
-                   To disambiguate potential mechanisms, we design five targeted data distributions to test specific algorithms that <i>can</i> solve algebra sequences when a corresponding set of facts is present in the context:
+                   To disambiguate between potential mechanisms, we design five targeted data distributions to test specific algorithms that <i>can</i> solve algebra sequences when a corresponding set of facts is present in the context:
                    <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>, and <span class="mechanism-badge badge-associate">Associative Composition</span>.
                 </p> 
                 <p class="text-center">
@@ -528,58 +528,62 @@
                 </figure> -->
 
                 <p>
-                    When copying isn't possible, the model uses a sophisticated elimination strategy. It tracks which variables belong 
-                    to the same algebraic group (the <em>closure</em>) and systematically eliminates invalid answers using the cancellation 
-                    law. We discover this mechanism by training subspaces that causally represent the closure and elimination sets, achieving 
-                    99.8% intervention accuracy.
+                    The final mechanism we study is closure-based cancellation. It is also a combination of two complementary sub-mechanisms: 
+                    (1) tracking and promoting variables belonging to the same algebraic group (i.e., <b>the closure</b>), and (2) systematically eliminating invalid answers using the <b>cancellation law</b>.
+                    The difference between these two sets produces the final answer.
+                    We verify this mechanism by identifying subspaces that causally represent the closure and cancellation sets, though we find evidence this computation is spread across several attention heads.
                 </p>
 
                 
 
 
                 <h2 id="phase-transitions">Phase Transitions Correspond to Learning of Discrete Skills</h2>
-                We find that models undergo the same sequence of phase transitions during training across different seeds and configurations.
-                
                 <figure class="center_image" style="margin-top: 30px">
                     <img src="images/paper/phase_transition.png" style="width:100%">
                 </figure>
+                We find that models undergo a similar sequence of phase transitions during training across different seeds and configurations.
+                Models first learn to <b>(1) predict structural tokens</b>, followed quickly by <b>(2) learning to compute group closure</b>: learning that combining two group elements always yields another valid group element.
+                At the same time, the model learns the <b>(3) query promotion submechanism</b>, achieving around 50% on identity sequences.
+
+                
+                The next sharp drop in loss corresponds to the model learning <b>(4) contextual copying</b>, first reproducing facts verbatim
+                and then extending to <b>(5) commutative copying</b>.
+                
+                Later mechanisms emerge more gradually. The model develops \textbf{identity recognition}, steadily improving on identity-related facts 
+                Once the model can retrieve facts from context, it quickly learns to solve both identity and cancellation facts at the same time. 
+                We hypothesize these are learned jointly because the <b>(6) elimination subspace</b> and the <b>(7) identity demotion mechanism </b> perform similar functions, and their ``promotion" submechanism counterparts are learned at similar times earlier in training.
+                
+                Finally, models begin to solve some associative sequences, though this happ. 
+                This learning trajectory suggests that models acquire discrete skills in a particular order, building on previously learned mechanisms to learn more complex ones. 
+                
+                
 
 
                 <h2 id="related-work">Related Work</h2>
+                Our work builds on insights from a growing body of research investigating how transformers learn to perform numeric reasoning tasks, both in small models trained on algorithmic tasks and in large pre-trained language models.
+                
 
                 <!-- <p class="citation"><a href=""><img src="images/related_work/" alt=""></a><br>
                     <b>Notes:</b> 
                 </p>  -->
 
-                <h2>Strategies for Numeric Reasoning in Fixed-Symbol Arithmetic</h2>
-                
+                <h2>Numeric Reasoning in Small Transformers</h2>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2201.02177"><img src="images/related_work/power-grokking.png" alt="power-grokking-2022">Althea Power, Yuri Burda, Harri Edwards, Igor Babuschkin, Vedant Misra. Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets. 2022.</a><br>
-                    <b>Notes:</b> 
-                </p> 
-
-                <p class="citation"><a href="https://arxiv.org/abs/2205.10343"><img src="images/related_work/liu-grokking.png" alt="liu-grokking-2022">Ziming Liu, Ouail Kitouni, Niklas Nolte, Eric Michaud, Max Tegmark, Mike Williams. Towards Understanding Grokking: An Effective Theory of Representation Learning. 2022.</a><br>
-                    <b>Notes:</b> 
-                </p> 
-
-                <p class="citation"><a href="https://arxiv.org/abs/2410.21272"><img src="images/related_work/nikankin-arithmetic.png" alt="nikankin-arithmetic-2025">Yaniv Nikankin, Anja Reusch, Aaron Mueller, Yonatan Belinkov. Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics.</a><br>
-                    <b>Notes:</b> 
-                </p> 
-
-                <p class="citation"><a href="https://arxiv.org/abs/2406.03445"><img src="images/related_work/zhou-fourier.png" alt="zhou-fourier-2024">Tianyi Zhou, Deqing Fu, Vatsal Sharan, Robin Jia. Pre-trained Large Language Models Use Fourier Features to Compute Addition. 2024.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> The first paper to identify and analyze "grokking", where transformers suddenly generalize after extended training. They find model outputs often reflect the structure of the underlying algorithmic task. 
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2301.05217"><img src="images/related_work/nanda-grokking.png" alt="nanda-grokking-2023">Neel Nanda, Lawrence Chan, Tom Lieberum, Jess Smith, Jacob Steinhardt. Progress Measures for Grokking via Mechanistic Interpretability. 2023.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> The authors reverse-engineer how a one-layer transformer learns to solve modular addition via Fourier token embeddings. They identify three distinct phases of learning where the model first memorizes, then develops generalizing fourier features, then "cleans up" by removing the memorizing solution.
                 </p> 
 
                 <p class="citation"><a href="https://arxiv.org/abs/2306.17844"><img src="images/related_work/zhong-pizza-clock.png" alt="zhong-clock-2023">Ziqian Zhong, Ziming Liu, Max Tegmark, Jacob Andreas. The Clock and the Pizza: Two Stories in Mechanistic Explanation of Neural Networks. 2023.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> Transformers can learn to solve modular addition by implementing either a "clock" algorithm or a "pizza" algorithm, depending on the random seed used for training. They analyze the mechanisms behind both algorithms, showing both rely on Fourier token embeddings.
                 </p>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2410.04368"><img src="images/related_work/zhong-random.png" alt="zhong-random-2024">Ziqian Zhong, Jacob Andreas. Algorithmic Capabilities of Random Transformers. 2024.</a><br>
-                    <b>Notes:</b> 
+                    <b>Notes:</b> Transformers with trained token embeddings, but otherwise frozen random weights can still implement familiar geometric solutions to solve algorithmic problems, including Fourier token embedddings for modular arithmetic.
+                    
                 </p>
 
                 <p class="citation"><a href="https://arxiv.org/abs/2406.02550"><img src="images/related_work/he-double-grokking.png" alt="">Tianyu He, Darshil Doshi, Aritra Das, Andrey Gromov. Learning to Grok: Emergence of In-Context Learning and Skill Composition in Modular Arithmetic Tasks</a><br>
@@ -590,15 +594,27 @@
                     <b>Notes:</b> 
                 </p> 
 
+                <h2>Numeric Reasoning in Pre-Trained LLMs</h2>
+
+                <p class="citation"><a href="https://arxiv.org/abs/2406.03445"><img src="images/related_work/zhou-fourier.png" alt="zhou-fourier-2024">Tianyi Zhou, Deqing Fu, Vatsal Sharan, Robin Jia. Pre-trained Large Language Models Use Fourier Features to Compute Addition. 2024.</a><br>
+                    <b>Notes:</b> 
+                </p> 
+
+                <p class="citation"><a href="https://arxiv.org/abs/2410.21272"><img src="images/related_work/nikankin-arithmetic.png" alt="nikankin-arithmetic-2025">Yaniv Nikankin, Anja Reusch, Aaron Mueller, Yonatan Belinkov. Arithmetic Without Algorithms: Language Models Solve Math with a Bag of Heuristics. 2025.</a><br>
+                    <b>Notes:</b> The authors show that standard pre-trained LLMs use a "bag of heuristics" to solve arithmetic problems - a mix of task-specific, but locally generalizable .
+                </p> 
+
                 <p class="citation"><a href="https://arxiv.org/abs/2505.05145"><img src="images/related_work/hu-addition-subspace.png" alt="">Xinyan Hu, Kayo Yin, Michael I. Jordan, Jacob Steinhardt, Lijie Chen. Understanding In-Context Learning of Addition via Activation Subspaces. 2025.</a><br>
                     <b>Notes:</b> 
                 </p> 
 
-                <p class="citation"><a href="https://arxiv.org/abs/2410.05229"><img src="images/related_work/mirzadeh-gsm_symbolic.png" alt="">Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, Mehrdad Farajtabar. GSM-Symbolic: Understanding the Limitations of Mathematical Reasoning in Large Language Models. 2025.</a><br>
+                <p class="citation"><a href="https://arxiv.org/abs/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
                     <b>Notes:</b> 
                 </p> 
 
-                <p class="citation"><a href="https://arxiv.org/abs/2502.00873"><img src="images/related_work/kantamneni-addition.png" alt="kantamneni-addition-2025"> Subhash Kantamneni, Max Tegmark. Language Models Use Trigonometry to do Addition. 2025.</a><br>
+                
+
+                <p class="citation"><a href="https://arxiv.org/abs/2410.05229"><img src="images/related_work/mirzadeh-gsm_symbolic.png" alt="">Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, Mehrdad Farajtabar. GSM-Symbolic: Understanding the Limitations of Mathematical Reasoning in Large Language Models. 2025.</a><br>
                     <b>Notes:</b> 
                 </p> 
 
