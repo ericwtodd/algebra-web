@@ -504,7 +504,7 @@
                     }
                     
                     if (userAnswer === correctAnswer) {
-                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">Correct!' + shuffledExamples[currentExample].explanation + '</p>';
+                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">Correct! ' + shuffledExamples[currentExample].explanation + '</p>';
                     } else {
                         feedback.innerHTML = '<p style="color: #721c24;">Not quite. The correct answer is <b>' + shuffledExamples[currentExample].answer + '</b>.</p><p>' + shuffledExamples[currentExample].explanation.replace('✓ Correct!', '') + '</p>';
                     }
