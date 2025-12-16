@@ -291,13 +291,13 @@
                     [',bb=j,fo=o,ci=f,ll=i,lf=l,ol=f,oi=l,if=i,ic=f,ci=f,pb=e,cl=o,ll=i,oo=c,lc=o',
                     ['commute']],
                     [',la=o,oa=l,oi=o,ia=a,li=l,aa=i,al=o,li=l,la=o,oo=i,li=l,lo=a,il=l,ai=a,io=o',
-                    ['commute', 'identity', 'cancel', 'associate']],
+                    ['identity', 'commute', 'cancel', 'associate']],
                     [',pp=p,np=n,ln=h,nh=e,hl=p,hh=n,ep=e,lp=l,ph=h,lh=p,nh=e,nh=e,ln=h,hl=p,hn=e',
                     ['commute']],
                     [',ob=b,bp=j,bd=g,jg=b,go=g,bj=p,jj=o,po=p,od=d,op=p,jp=d,gj=d,jp=d,ob=b,og=g',
-                    ['commute', 'identity', 'associate']],
+                    ['identity', 'commute', 'associate']],
                     [',fd=a,gf=f,ga=a,gi=i,fi=d,da=i,ad=i,id=g,ia=f,ga=a,ff=i,gi=i,fa=g,ii=a,ig=i',
-                    ['commute', 'identity', 'associate']],
+                    ['identity', 'commute', 'associate']],
                     [',ll=l,ln=n,ll=l,kn=l,nl=n,aa=l,an=k,ak=n,al=a,kl=k,ln=n,nl=n,ka=n,ln=n,nk=l',
                     ['commute']],
                     [',io=l,fi=k,lo=k,cf=f,ik=o,ll=o,if=k,go=c,io=l,kk=i,lf=g,ic=i,ko=g,ll=o,ol=k',
@@ -338,9 +338,9 @@
                     ['associate']],
                     [',ka=p,ka=p,fa=a,fa=a,jk=f,fa=a,fa=a,fa=a,fa=a,fa=a,jk=f,fa=a,ka=p,ka=p,jp=a',
                     ['associate']],
-                    [',fl=i,fl=i,pj=f,fl=i,fl=i,jl=m,pj=f,pj=f,fl=i,fl=i,pj=f,fl=i,fl=i,jl=m,pm=i',
+                    [',fl=i,fl=i,pj=f,fl=i,jl=m,fl=i,pj=f,fl=i,pj=f,fl=i,pj=f,fl=i,fl=i,jl=m,pm=i',
                     ['associate']],
-                    [',fm=c,fm=c,fm=c,fm=c,ff=b,fm=c,ff=b,bm=a,ff=b,bm=a,fm=c,bm=a,bm=a,bm=a,fc=a',
+                    [',fm=c,fm=c,bm=a,fm=c,ff=b,fm=c,bm=a,ff=b,bm=a,ff=b,fm=c,bm=a,fm=c,bm=a,fc=a',
                     ['associate']],
                     [',cc=i,hc=p,pp=i,pi=p,cc=i,ph=c,pp=i,hc=p,ph=c,ic=c,pp=i,pi=p,ph=c,pi=p,pc=h',
                     ['cancel']],
@@ -412,7 +412,7 @@
                     const primaryMechanism = mechanisms[0];
                     const otherMechanisms = mechanisms.slice(1);
                     
-                    let explanation = `Correct! This sequence can be solved by <b>${mechanismNames[primaryMechanism]}</b>. ${mechanismExplanations[primaryMechanism]}.`;
+                    let explanation = `This sequence can be solved by <b>${mechanismNames[primaryMechanism]}</b>. ${mechanismExplanations[primaryMechanism]}.`;
                     
                     if (otherMechanisms.length > 0) {
                         const otherNames = otherMechanisms.map(m => mechanismNames[m]);
@@ -504,7 +504,7 @@
                     }
                     
                     if (userAnswer === correctAnswer) {
-                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">' + shuffledExamples[currentExample].explanation + '</p>';
+                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">Correct!' + shuffledExamples[currentExample].explanation + '</p>';
                     } else {
                         feedback.innerHTML = '<p style="color: #721c24;">Not quite. The correct answer is <b>' + shuffledExamples[currentExample].answer + '</b>.</p><p>' + shuffledExamples[currentExample].explanation.replace('✓ Correct!', '') + '</p>';
                     }
@@ -515,7 +515,7 @@
                     const button = document.getElementById('show-hint'); 
                     
                     if (hintDiv.style.display === 'none') { 
-                        hintDiv.innerHTML = '<p><b>💡 Hint:</b> ' + shuffledExamples[currentExample].hint + '</p>';
+                        hintDiv.innerHTML = '<p><b>Hint:</b> ' + shuffledExamples[currentExample].hint + '</p>';
                         hintDiv.style.display = 'block';
                         button.textContent = 'Hide Hint';  
                     } else {  
@@ -740,7 +740,7 @@
                     <b>Notes:</b> Introduces GSM-symbolic, a variant of GSM8K (<a href="https://arxiv.org/abs/2110.14168">Cobbe et al., 2021</a>) that uses symbolic templates to generate a more diverse set of grade school math problems. They find LLM performance has high variance to rephrasings and lacks robustness to changes in numeric values of simple math problems.
                 </p> 
 
-                <p class="citation"><a href="https://aclanthology.org/2025.findings-acl.656/"><img src="images/related_work/calais-disentangle.png" alt="">Pedro Calais, Gabriel Franco, Zilu Tang, Themistoklis Nikas, Wagner Meira Jr., Evimaria Terzi, Mark Crovella. Disentangling Text and Math in Word Problems: Evidence for the Bidimensional Structure of Large Language Models’ Reasoning. 2025.</a><br>
+                <p class="citation"><a href="https://aclanthology.org/2025.findings-acl.656/"><img src="images/related_work/calais-disentangle.png" alt="">Pedro Calais, Gabriel Franco, Zilu Tang, Themistoklis Nikas, Wagner Meira Jr., Evimaria Terzi, Mark Crovella. Disentangling Text and Math in Word Problems: Evidence for the Bidimensional Structure of Large Language Models' Reasoning. 2025.</a><br>
                     <b>Notes:</b> The authors investigate word problems by separating text interpretation from equation-solving. They find that small LLMs struggle significantly more with text comprehension than with solving purely expressed math equations.
                 </p> 
 
