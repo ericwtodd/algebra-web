@@ -208,67 +208,169 @@
 
                 <script>
                 // Data from paper - 10 examples per mechanism
-                const rawExamples = {
-                    copy: [',ja=a,ja=a,oo=a,ja=a,dj=d,dj=d,oo=a,dd=a,aj=a,od=j,da=o,da=o,ad=o,oj=o,ao=d,oa=d,oa=d,jo=o,do=j,do=j',
-                        ',gj=h,hg=g,hb=b,jg=h,bb=h,bh=b,gb=j,bb=h,gj=h,bh=b,jh=j,gh=g,bg=j,jb=g,bb=h,hb=b,hh=h,jb=g,hj=j,hb=b',
-                        ',lc=i,cc=l,hh=h,il=l,ga=p,hh=h,nn=p,ll=c,il=l,gh=g,ga=p,il=l,gn=h,ha=a,pp=g,li=l,gn=h,ng=h,hh=h,pp=g',
-                        ',ca=g,gf=g,ga=f,co=f,ca=g,og=a,oa=c,of=o,cg=o,fa=a,gg=c,fo=o,af=a,og=a,oo=g,gc=o,go=a,oc=f,og=a,og=a',
-                        ',mf=f,ff=e,fe=m,ee=f,em=e,ee=f,fe=m,mm=m,mf=f,ff=e,me=e,ff=e,mm=m,mf=f,em=e,fe=m,fe=m,em=e,ee=f,mf=f',
-                        ',ek=e,ol=e,je=k,jn=o,en=d,ak=a,li=d,lk=l,gc=g,bd=a,dd=o,ee=a,kb=b,oe=n,ka=a,en=d,lk=l,ib=n,la=n,bd=a',
-                        ',oj=g,hp=c,go=k,df=j,gg=j,fb=g,fl=b,hi=m,mm=p,kd=d,dg=l,jd=a,kg=g,ea=b,ic=m,ok=o,ja=f,fa=d,ag=e,ok=o',
-                        ',pp=d,kn=f,ca=c,hb=g,if=f,ee=j,jf=n,nm=j,ff=e,me=f,mf=i,nn=k,km=e,me=f,ie=e,nk=f,cc=o,fn=m,hp=l,if=f',
-                        ',ll=c,cc=l,hh=h,cc=l,ch=c,hl=l,lh=l,hl=l,cl=h,hl=l,hc=c,cl=h,ll=c,cc=l,ll=c,ch=c,cl=h,cl=h,lh=l,cl=h',
-                        ',fh=f,ah=a,ah=a,ng=a,fn=h,hm=m,nm=g,fm=n,gg=h,nh=n,aa=m,nh=n,fg=m,af=g,hh=h,ng=a,am=h,ng=a,ha=a,fh=f'],
-                    commute: [',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
-                        ',jm=j,ii=j,ih=m,jj=m,ji=h,hm=h,hj=i,jj=m,jm=j,jh=i,mi=i,mm=m,jm=j,mj=j,ih=m,ii=j,ij=h,hj=i,im=i,mh=h',
-                        ',gj=h,hd=d,dg=a,mn=d,gj=h,mn=d,md=g,jn=m,hh=h,gg=b,hb=b,fm=h,fg=d,bb=d,nj=m,jm=a,na=f,mg=n,ga=m,bh=b',
-                        ',ph=p,nf=n,mm=h,mh=m,fl=l,il=n,gf=g,gi=f,jj=n,jg=i,in=g,gn=l,in=g,ll=f,mh=m,ph=p,fn=n,nj=f,mh=m,li=n',
-                        ',ia=h,bl=g,dd=j,gl=f,op=d,mf=m,gg=b,ca=l,nc=f,lm=n,gb=h,mb=l,nm=h,gh=c,lh=b,bh=a,mm=c,ba=m,ng=m,cn=f',
-                        ',ip=i,eh=p,mn=h,mp=m,he=p,hh=e,nm=h,pe=e,pe=e,ni=e,mh=i,mi=p,ni=e,mm=e,pp=p,ii=h,ee=h,in=e,hm=i,pi=i',
-                        ',ni=h,ae=j,lc=a,la=p,cd=j,ja=d,pc=l,ff=f,ea=j,da=c,pd=a,cl=a,on=i,el=d,jl=c,ed=l,ho=g,io=n,hi=n,dp=a',
-                        ',nn=d,na=i,dn=n,dn=n,aa=n,in=a,na=i,nd=n,da=a,ni=a,di=i,id=i,nn=d,nd=n,da=a,ii=n,na=i,nd=n,ia=d,an=i',
-                        ',ml=i,gh=i,mm=j,oa=a,ng=i,cp=d,in=k,ki=h,jh=h,jm=m,gm=h,kl=g,li=m,kg=j,dc=e,gm=h,lg=k,hh=j,mk=h,gl=k'],
-                        // ',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o', //This one might not be solvable via commutativity?
-                    identity: [',dj=h,kp=e,gb=o,ak=j,no=o,pm=p,pp=f,aj=p,fp=a,ea=d,no=o,gn=g,cc=c,fp=a,oo=n,ek=m,kk=d,ep=h,pk=e,bn=b',
-                        ',nk=a,an=l,ai=a,hc=h,fm=d,kn=a,eo=e,om=m,li=l,dd=m,bj=n,li=l,in=n,kj=l,nn=j,kj=l,oo=o,ib=b,gg=c,cp=p',
-                        ',cg=p,ce=g,cg=p,be=p,lp=c,je=e,eh=k,kk=h,ai=m,ni=i,an=a,om=f,ff=n,gg=l,le=h,gh=e,hb=c,hh=p,lj=l,hj=h',
-                        ',ik=l,ba=f,jk=i,ji=m,ll=i,jl=o,ae=a,im=k,ki=l,cc=o,ic=g,go=o,fa=b,gi=i,ep=p,ck=m,aa=e,ea=a,lg=l,gk=k',
-                        ',ee=l,kd=d,mi=i,ai=m,ln=h,ek=e,le=c,gn=e,gk=g,ob=f,of=b,ke=e,pf=f,bp=b,ce=n,kk=k,ma=a,aa=i,le=c,kn=n',
-                        ',jl=i,mp=k,ll=c,bf=f,km=p,nn=c,ap=f,jn=d,km=p,ao=k,bk=k,eo=f,pa=f,fa=p,fb=f,ko=a,ln=i,dd=i,ic=i,jc=j',
-                        ',ai=h,jj=j,gg=j,ed=h,bh=p,hp=b,hd=j,ih=g,pb=d,dp=a,eb=i,jb=b,di=g,dd=m,hb=g,bh=p,ee=d,pd=b,eg=a,jp=p',
-                        ',dd=j,jn=j,dd=j,jj=n,jn=j,jj=n,dn=d,dd=j,jm=d,jd=m,mm=j,jm=d,mj=d,nj=j,jn=j,dd=j,dm=n,nn=n,jj=n,nm=m',
-                        ',ae=g,ep=i,kg=k,ge=e,kp=a,ka=e,pk=a,pg=p,ii=k,ie=a,pa=k,ag=a,ka=e,kk=i,ag=a,pk=a,ai=p,ik=g,ee=k,gg=g',
-                        ',gm=o,gn=e,ej=e,mp=e,en=i,on=p,em=p,ii=j,po=b,nm=b,cn=m,ii=j,ei=n,ie=b,mn=b,bp=g,bb=m,pg=n,jb=b,jp=p'],
-                    cancel: [',ja=c,jc=o,jc=o,jo=a,ii=i,mi=m,mi=m,jj=m,jo=a,ja=c,ai=a,oi=o,jj=m,jm=i,ci=c,ci=c,oi=o,jo=a,ii=i,ji=j',
-                        ',ml=m,mo=a,mi=p,ip=m,lp=p,mi=p,pp=l,mi=p,pp=l,ml=m,ap=o,ip=m,ml=m,ap=o,mi=p,ip=m,mm=l,ma=o,op=a,mp=i',
-                        ',di=n,hg=j,hm=h,hn=d,ji=g,ii=j,hh=n,di=n,mi=i,ji=g,hd=g,hg=j,gi=d,hh=n,hg=j,mi=i,hj=i,ni=h,ji=g,hi=m',
-                        ',fk=b,fl=e,fl=e,lb=i,kb=e,bb=l,lb=i,fi=f,ib=b,fk=b,ff=i,bb=l,kb=e,fl=e,fe=l,eb=f,ff=i,fl=e,fl=e,fb=k',
-                        ',fh=g,hk=c,hd=l,ih=d,hf=g,hg=k,hl=n,kh=c,hi=d,hn=e,gh=k,he=i,dh=l,hc=h,nh=e,ch=h,eh=i,kh=c,lh=n,hh=f',
-                        ',gm=m,gf=f,og=o,gk=k,gd=d,dg=d,fg=f,gk=k,mg=m,gf=f,dg=d,gf=f,kg=k,fg=f,kg=k,gk=k,go=o,gk=k,dg=d,gg=g',
-                        ',do=a,bo=p,ho=o,ho=o,cp=d,cc=o,eo=c,ch=c,cb=a,ce=h,ao=d,oo=h,do=a,cc=o,po=b,ca=p,ao=d,cb=a,cd=b,co=e',
-                        ',nn=n,nc=c,nb=b,nc=c,nn=n,nn=n,bp=c,bp=c,nc=c,nn=n,nb=b,pp=n,pp=n,cp=b,pp=n,nb=b,nb=b,nb=b,nb=b,np=p',
-                        ',mg=k,mg=k,gg=f,jg=g,ff=j,ff=j,mg=k,ff=j,fh=k,og=h,fc=g,fm=o,hg=m,fh=k,cg=j,fk=h,fj=f,kg=o,fo=m,fg=c',
-                        ',hf=i,fe=m,mf=e,fh=i,pf=l,fn=f,ef=m,fh=i,fm=e,fp=l,fl=p,nf=f,fi=h,fi=h,hf=i,if=h,lf=p,lf=p,fp=l,ff=n'],
-                    associate: [',kf=j,pk=f,pk=f,pj=e,kf=j,pk=f,pj=e,pk=f,kf=j,pj=e,kf=j,kf=j,pj=e,kf=j,pk=f,pk=f,pj=e,kf=j,pj=e,ff=e',
-                        ',bc=d,bc=d,bc=d,mb=d,mb=d,bc=d,mb=d,md=b,mb=d,mb=d,mb=d,bc=d,md=b,bc=d,md=b,md=b,mb=d,bc=d,md=b,dc=b',
-                        ',ha=m,ha=m,ha=m,ha=m,ha=m,ha=m,hh=g,ha=m,ha=m,ha=m,ha=m,ha=m,hp=a,hp=a,ha=m,ha=m,hh=g,ha=m,hp=a,gp=m',
-                        ',bi=j,bb=i,bi=j,bj=g,bj=g,bj=g,bj=g,bb=i,bj=g,bj=g,bi=j,bb=i,bb=i,bj=g,bi=j,bj=g,bb=i,bi=j,bi=j,ii=g',
-                        ',cc=j,cp=c,cp=c,cc=j,cp=c,cc=j,cc=j,ck=p,ck=p,cc=j,ck=p,ck=p,ck=p,cc=j,cc=j,ck=p,cp=c,cp=c,cc=j,jk=c',
-                        ',eg=k,mb=e,mb=e,bg=m,bg=m,mb=e,bg=m,eg=k,eg=k,mb=e,mb=e,eg=k,eg=k,mb=e,eg=k,mb=e,eg=k,eg=k,bg=m,mm=k',
-                        ',cj=d,ce=l,cj=d,cj=d,jd=e,ce=l,jd=e,ce=l,jd=e,ce=l,ce=l,ce=l,ce=l,cj=d,ce=l,cj=d,jd=e,cj=d,cj=d,dd=l',
-                        ',de=g,md=a,md=a,ae=e,ae=e,de=g,de=g,de=g,ae=e,md=a,ae=e,de=g,ae=e,md=a,md=a,md=a,de=g,md=a,ae=e,mg=e',
-                        ',hc=d,ck=p,dk=i,dk=i,ck=p,hc=d,hc=d,ck=p,hc=d,hc=d,ck=p,ck=p,hc=d,ck=p,ck=p,hc=d,hc=d,dk=i,hc=d,hp=i',
-                        ',mm=c,me=a,mm=c,ej=m,me=a,mm=c,ej=m,mm=c,me=a,mm=c,me=a,mm=c,mm=c,ej=m,mm=c,ej=m,ej=m,mm=c,me=a,aj=c']
-                };
+                // const rawExamples = {
+                //     copy: [',ja=a,ja=a,oo=a,ja=a,dj=d,dj=d,oo=a,dd=a,aj=a,od=j,da=o,da=o,ad=o,oj=o,ao=d,oa=d,oa=d,jo=o,do=j,do=j',
+                //         ',gj=h,hg=g,hb=b,jg=h,bb=h,bh=b,gb=j,bb=h,gj=h,bh=b,jh=j,gh=g,bg=j,jb=g,bb=h,hb=b,hh=h,jb=g,hj=j,hb=b',
+                //         ',lc=i,cc=l,hh=h,il=l,ga=p,hh=h,nn=p,ll=c,il=l,gh=g,ga=p,il=l,gn=h,ha=a,pp=g,li=l,gn=h,ng=h,hh=h,pp=g',
+                //         ',ca=g,gf=g,ga=f,co=f,ca=g,og=a,oa=c,of=o,cg=o,fa=a,gg=c,fo=o,af=a,og=a,oo=g,gc=o,go=a,oc=f,og=a,og=a',
+                //         ',mf=f,ff=e,fe=m,ee=f,em=e,ee=f,fe=m,mm=m,mf=f,ff=e,me=e,ff=e,mm=m,mf=f,em=e,fe=m,fe=m,em=e,ee=f,mf=f',
+                //         ',ek=e,ol=e,je=k,jn=o,en=d,ak=a,li=d,lk=l,gc=g,bd=a,dd=o,ee=a,kb=b,oe=n,ka=a,en=d,lk=l,ib=n,la=n,bd=a',
+                //         ',oj=g,hp=c,go=k,df=j,gg=j,fb=g,fl=b,hi=m,mm=p,kd=d,dg=l,jd=a,kg=g,ea=b,ic=m,ok=o,ja=f,fa=d,ag=e,ok=o',
+                //         ',pp=d,kn=f,ca=c,hb=g,if=f,ee=j,jf=n,nm=j,ff=e,me=f,mf=i,nn=k,km=e,me=f,ie=e,nk=f,cc=o,fn=m,hp=l,if=f',
+                //         ',ll=c,cc=l,hh=h,cc=l,ch=c,hl=l,lh=l,hl=l,cl=h,hl=l,hc=c,cl=h,ll=c,cc=l,ll=c,ch=c,cl=h,cl=h,lh=l,cl=h',
+                //         ',fh=f,ah=a,ah=a,ng=a,fn=h,hm=m,nm=g,fm=n,gg=h,nh=n,aa=m,nh=n,fg=m,af=g,hh=h,ng=a,am=h,ng=a,ha=a,fh=f'],
+                //     commute: [',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
+                //         ',jm=j,ii=j,ih=m,jj=m,ji=h,hm=h,hj=i,jj=m,jm=j,jh=i,mi=i,mm=m,jm=j,mj=j,ih=m,ii=j,ij=h,hj=i,im=i,mh=h',
+                //         ',gj=h,hd=d,dg=a,mn=d,gj=h,mn=d,md=g,jn=m,hh=h,gg=b,hb=b,fm=h,fg=d,bb=d,nj=m,jm=a,na=f,mg=n,ga=m,bh=b',
+                //         ',ph=p,nf=n,mm=h,mh=m,fl=l,il=n,gf=g,gi=f,jj=n,jg=i,in=g,gn=l,in=g,ll=f,mh=m,ph=p,fn=n,nj=f,mh=m,li=n',
+                //         ',ia=h,bl=g,dd=j,gl=f,op=d,mf=m,gg=b,ca=l,nc=f,lm=n,gb=h,mb=l,nm=h,gh=c,lh=b,bh=a,mm=c,ba=m,ng=m,cn=f',
+                //         ',ip=i,eh=p,mn=h,mp=m,he=p,hh=e,nm=h,pe=e,pe=e,ni=e,mh=i,mi=p,ni=e,mm=e,pp=p,ii=h,ee=h,in=e,hm=i,pi=i',
+                //         ',ni=h,ae=j,lc=a,la=p,cd=j,ja=d,pc=l,ff=f,ea=j,da=c,pd=a,cl=a,on=i,el=d,jl=c,ed=l,ho=g,io=n,hi=n,dp=a',
+                //         ',nn=d,na=i,dn=n,dn=n,aa=n,in=a,na=i,nd=n,da=a,ni=a,di=i,id=i,nn=d,nd=n,da=a,ii=n,na=i,nd=n,ia=d,an=i',
+                //         ',ml=i,gh=i,mm=j,oa=a,ng=i,cp=d,in=k,ki=h,jh=h,jm=m,gm=h,kl=g,li=m,kg=j,dc=e,gm=h,lg=k,hh=j,mk=h,gl=k'],
+                //         // ',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o', //This one might not be solvable via commutativity?
+                //     identity: [',dj=h,kp=e,gb=o,ak=j,no=o,pm=p,pp=f,aj=p,fp=a,ea=d,no=o,gn=g,cc=c,fp=a,oo=n,ek=m,kk=d,ep=h,pk=e,bn=b',
+                //         ',nk=a,an=l,ai=a,hc=h,fm=d,kn=a,eo=e,om=m,li=l,dd=m,bj=n,li=l,in=n,kj=l,nn=j,kj=l,oo=o,ib=b,gg=c,cp=p',
+                //         ',cg=p,ce=g,cg=p,be=p,lp=c,je=e,eh=k,kk=h,ai=m,ni=i,an=a,om=f,ff=n,gg=l,le=h,gh=e,hb=c,hh=p,lj=l,hj=h',
+                //         ',ik=l,ba=f,jk=i,ji=m,ll=i,jl=o,ae=a,im=k,ki=l,cc=o,ic=g,go=o,fa=b,gi=i,ep=p,ck=m,aa=e,ea=a,lg=l,gk=k',
+                //         ',ee=l,kd=d,mi=i,ai=m,ln=h,ek=e,le=c,gn=e,gk=g,ob=f,of=b,ke=e,pf=f,bp=b,ce=n,kk=k,ma=a,aa=i,le=c,kn=n',
+                //         ',jl=i,mp=k,ll=c,bf=f,km=p,nn=c,ap=f,jn=d,km=p,ao=k,bk=k,eo=f,pa=f,fa=p,fb=f,ko=a,ln=i,dd=i,ic=i,jc=j',
+                //         ',ai=h,jj=j,gg=j,ed=h,bh=p,hp=b,hd=j,ih=g,pb=d,dp=a,eb=i,jb=b,di=g,dd=m,hb=g,bh=p,ee=d,pd=b,eg=a,jp=p',
+                //         ',dd=j,jn=j,dd=j,jj=n,jn=j,jj=n,dn=d,dd=j,jm=d,jd=m,mm=j,jm=d,mj=d,nj=j,jn=j,dd=j,dm=n,nn=n,jj=n,nm=m',
+                //         ',ae=g,ep=i,kg=k,ge=e,kp=a,ka=e,pk=a,pg=p,ii=k,ie=a,pa=k,ag=a,ka=e,kk=i,ag=a,pk=a,ai=p,ik=g,ee=k,gg=g',
+                //         ',gm=o,gn=e,ej=e,mp=e,en=i,on=p,em=p,ii=j,po=b,nm=b,cn=m,ii=j,ei=n,ie=b,mn=b,bp=g,bb=m,pg=n,jb=b,jp=p'],
+                //     cancel: [',ja=c,jc=o,jc=o,jo=a,ii=i,mi=m,mi=m,jj=m,jo=a,ja=c,ai=a,oi=o,jj=m,jm=i,ci=c,ci=c,oi=o,jo=a,ii=i,ji=j',
+                //         ',ml=m,mo=a,mi=p,ip=m,lp=p,mi=p,pp=l,mi=p,pp=l,ml=m,ap=o,ip=m,ml=m,ap=o,mi=p,ip=m,mm=l,ma=o,op=a,mp=i',
+                //         ',di=n,hg=j,hm=h,hn=d,ji=g,ii=j,hh=n,di=n,mi=i,ji=g,hd=g,hg=j,gi=d,hh=n,hg=j,mi=i,hj=i,ni=h,ji=g,hi=m',
+                //         ',fk=b,fl=e,fl=e,lb=i,kb=e,bb=l,lb=i,fi=f,ib=b,fk=b,ff=i,bb=l,kb=e,fl=e,fe=l,eb=f,ff=i,fl=e,fl=e,fb=k',
+                //         ',fh=g,hk=c,hd=l,ih=d,hf=g,hg=k,hl=n,kh=c,hi=d,hn=e,gh=k,he=i,dh=l,hc=h,nh=e,ch=h,eh=i,kh=c,lh=n,hh=f',
+                //         ',gm=m,gf=f,og=o,gk=k,gd=d,dg=d,fg=f,gk=k,mg=m,gf=f,dg=d,gf=f,kg=k,fg=f,kg=k,gk=k,go=o,gk=k,dg=d,gg=g',
+                //         ',do=a,bo=p,ho=o,ho=o,cp=d,cc=o,eo=c,ch=c,cb=a,ce=h,ao=d,oo=h,do=a,cc=o,po=b,ca=p,ao=d,cb=a,cd=b,co=e',
+                //         ',nn=n,nc=c,nb=b,nc=c,nn=n,nn=n,bp=c,bp=c,nc=c,nn=n,nb=b,pp=n,pp=n,cp=b,pp=n,nb=b,nb=b,nb=b,nb=b,np=p',
+                //         ',mg=k,mg=k,gg=f,jg=g,ff=j,ff=j,mg=k,ff=j,fh=k,og=h,fc=g,fm=o,hg=m,fh=k,cg=j,fk=h,fj=f,kg=o,fo=m,fg=c',
+                //         ',hf=i,fe=m,mf=e,fh=i,pf=l,fn=f,ef=m,fh=i,fm=e,fp=l,fl=p,nf=f,fi=h,fi=h,hf=i,if=h,lf=p,lf=p,fp=l,ff=n'],
+                //     associate: [',kf=j,pk=f,pk=f,pj=e,kf=j,pk=f,pj=e,pk=f,kf=j,pj=e,kf=j,kf=j,pj=e,kf=j,pk=f,pk=f,pj=e,kf=j,pj=e,ff=e',
+                //         ',bc=d,bc=d,bc=d,mb=d,mb=d,bc=d,mb=d,md=b,mb=d,mb=d,mb=d,bc=d,md=b,bc=d,md=b,md=b,mb=d,bc=d,md=b,dc=b',
+                //         ',ha=m,ha=m,ha=m,ha=m,ha=m,ha=m,hh=g,ha=m,ha=m,ha=m,ha=m,ha=m,hp=a,hp=a,ha=m,ha=m,hh=g,ha=m,hp=a,gp=m',
+                //         ',bi=j,bb=i,bi=j,bj=g,bj=g,bj=g,bj=g,bb=i,bj=g,bj=g,bi=j,bb=i,bb=i,bj=g,bi=j,bj=g,bb=i,bi=j,bi=j,ii=g',
+                //         ',cc=j,cp=c,cp=c,cc=j,cp=c,cc=j,cc=j,ck=p,ck=p,cc=j,ck=p,ck=p,ck=p,cc=j,cc=j,ck=p,cp=c,cp=c,cc=j,jk=c',
+                //         ',eg=k,mb=e,mb=e,bg=m,bg=m,mb=e,bg=m,eg=k,eg=k,mb=e,mb=e,eg=k,eg=k,mb=e,eg=k,mb=e,eg=k,eg=k,bg=m,mm=k',
+                //         ',cj=d,ce=l,cj=d,cj=d,jd=e,ce=l,jd=e,ce=l,jd=e,ce=l,ce=l,ce=l,ce=l,cj=d,ce=l,cj=d,jd=e,cj=d,cj=d,dd=l',
+                //         ',de=g,md=a,md=a,ae=e,ae=e,de=g,de=g,de=g,ae=e,md=a,ae=e,de=g,ae=e,md=a,md=a,md=a,de=g,md=a,ae=e,mg=e',
+                //         ',hc=d,ck=p,dk=i,dk=i,ck=p,hc=d,hc=d,ck=p,hc=d,hc=d,ck=p,ck=p,hc=d,ck=p,ck=p,hc=d,hc=d,dk=i,hc=d,hp=i',
+                //         ',mm=c,me=a,mm=c,ej=m,me=a,mm=c,ej=m,mm=c,me=a,mm=c,me=a,mm=c,mm=c,ej=m,mm=c,ej=m,ej=m,mm=c,me=a,aj=c']
+                // };
+                // Data with sequences and their possible solution mechanisms
+                const rawExamples = [
+                    [',bb=h,jj=b,gb=j,gb=j,jb=g,hh=h,gg=b,jh=j,bh=b,hh=h,jg=h,gh=g,bj=g,hj=j,hh=h',
+                    ['copy', 'identity', 'associate']],
+                    [',ci=c,cc=i,ck=e,ik=k,ei=e,cj=p,jp=e,ek=j,jc=p,ep=c,ij=j,ki=k,ej=i,ke=j,ke=j',
+                    ['copy']],
+                    [',kk=d,eg=l,nm=j,po=b,bg=g,gp=i,mj=d,jf=j,pi=l,mf=m,jd=h,hm=n,ig=b,hn=d,ig=b',
+                    ['copy']],
+                    [',nj=o,jn=o,of=n,ff=o,nj=o,oj=f,fh=f,hh=h,jj=n,jo=f,jj=n,jo=f,oh=o,on=h,hh=h',
+                    ['copy', 'identity', 'cancel']],
+                    [',jj=j,jc=c,jc=c,nc=j,cn=j,nj=n,cj=c,cn=j,jj=j,cn=j,jn=n,jj=j,cj=c,jj=j,jn=n',
+                    ['copy', 'identity']],
+                    [',mp=f,pp=n,pf=m,np=p,pf=m,mp=f,mn=m,pn=p,nm=m,mm=n,mf=p,pf=m,mf=p,mn=m,pn=p',
+                    ['copy', 'identity', 'cancel']],
+                    [',id=m,nn=n,ni=i,dd=n,id=m,in=i,dm=i,nd=d,nd=d,mm=n,md=i,im=d,in=i,mn=m,dd=n',
+                    ['copy']],
+                    [',ej=e,aa=g,gk=a,kg=a,ka=i,in=n,nc=a,cp=i,cc=k,jj=j,pa=n,cn=a,pg=k,ka=i,pg=k',
+                    ['copy']],
+                    [',bj=g,ob=i,hm=h,af=h,ok=o,ck=c,jo=e,jg=b,hn=f,cc=k,mh=h,gg=k,kg=g,ci=g,ci=g',
+                    ['copy']],
+                    [',pg=d,nm=n,hb=k,bb=n,ck=b,jj=i,cc=n,bc=i,dg=g,al=e,im=i,nn=k,mn=n,hk=j,cc=n',
+                    ['copy']],
+                    [',de=d,eg=g,eg=g,ee=e,de=d,ff=d,mm=f,fg=e,md=e,ef=f,fd=m,ee=e,fe=f,dd=g,df=m',
+                    ['commute']],
+                    [',ec=c,bb=e,bb=e,aa=m,ja=c,ac=j,jc=a,ea=a,ma=e,ac=j,mj=c,mm=a,ba=j,bj=a,ab=c',
+                    ['commute']],
+                    [',ah=b,ho=h,ah=b,oa=a,oa=a,ho=h,oa=a,aa=o,aa=o,bh=a,bo=b,oo=o,bh=a,ob=b,ao=a',
+                    ['commute', 'identity', 'cancel', 'associate']],
+                    [',bb=j,fo=o,ci=f,ll=i,lf=l,ol=f,oi=l,if=i,ic=f,ci=f,pb=e,cl=o,ll=i,oo=c,lc=o',
+                    ['commute']],
+                    [',la=o,oa=l,oi=o,ia=a,li=l,aa=i,al=o,li=l,la=o,oo=i,li=l,lo=a,il=l,ai=a,io=o',
+                    ['commute', 'identity', 'cancel', 'associate']],
+                    [',pp=p,np=n,ln=h,nh=e,hl=p,hh=n,ep=e,lp=l,ph=h,lh=p,nh=e,nh=e,ln=h,hl=p,hn=e',
+                    ['commute']],
+                    [',ob=b,bp=j,bd=g,jg=b,go=g,bj=p,jj=o,po=p,od=d,op=p,jp=d,gj=d,jp=d,ob=b,og=g',
+                    ['commute', 'identity', 'associate']],
+                    [',fd=a,gf=f,ga=a,gi=i,fi=d,da=i,ad=i,id=g,ia=f,ga=a,ff=i,gi=i,fa=g,ii=a,ig=i',
+                    ['commute', 'identity', 'associate']],
+                    [',ll=l,ln=n,ll=l,kn=l,nl=n,aa=l,an=k,ak=n,al=a,kl=k,ln=n,nl=n,ka=n,ln=n,nk=l',
+                    ['commute']],
+                    [',io=l,fi=k,lo=k,cf=f,ik=o,ll=o,if=k,go=c,io=l,kk=i,lf=g,ic=i,ko=g,ll=o,ol=k',
+                    ['commute']],
+                    [',bf=b,bf=b,ff=f,bb=a,ab=f,bb=a,bf=b,bf=b,ab=f,ff=f,ba=f,ba=f,bf=b,ff=f,fa=a',
+                    ['identity']],
+                    [',om=e,om=e,me=o,cc=c,co=o,me=o,oo=c,om=e,ee=c,mc=m,cc=c,cc=c,oo=c,me=o,ce=e',
+                    ['identity', 'associate']],
+                    [',dk=p,dd=k,kp=k,pp=p,pp=p,kd=p,pk=k,kp=k,kd=p,dk=p,kd=p,pp=p,pk=k,pp=p,dp=d',
+                    ['identity', 'cancel']],
+                    [',fa=h,kk=k,kf=f,fa=h,kf=f,ak=a,ha=f,ha=f,af=h,af=h,af=h,fh=a,aa=k,ha=f,kh=h',
+                    ['identity', 'cancel', 'associate']],
+                    [',ll=l,mn=c,dn=p,pf=c,lp=p,nm=c,fc=l,fd=m,mn=c,mc=d,mc=d,fl=f,np=l,nd=p,cl=c',
+                    ['identity', 'associate']],
+                    [',om=o,po=m,po=m,po=m,pp=o,po=m,mo=o,oo=p,mm=m,oo=p,om=o,mm=m,om=o,pp=o,mp=p',
+                    ['identity', 'cancel', 'associate']],
+                    [',gh=c,gh=c,hf=h,gh=c,hc=g,cg=f,cg=f,fc=c,hf=h,gg=h,gf=g,cg=f,cc=h,cc=h,ff=f',
+                    ['identity', 'cancel', 'associate']],
+                    [',lb=n,nk=n,gi=m,pi=f,ma=p,mi=g,jp=p,oo=o,bc=l,gm=j,pg=h,am=f,jf=f,if=p,kb=b',
+                    ['identity']],
+                    [',nj=o,gj=n,po=o,gn=p,ng=p,no=g,oo=n,li=e,ii=k,gj=n,ik=l,on=g,pp=p,jn=o,gp=g',
+                    ['identity']],
+                    [',of=a,oo=f,af=o,ga=a,og=o,og=o,ao=g,of=a,fg=f,oo=f,gf=f,of=a,gf=f,fo=a,gg=g',
+                    ['identity', 'cancel', 'associate']],
+                    [',ll=f,kl=n,ll=f,ll=f,ll=f,kl=n,kk=l,kk=l,kk=l,kk=l,kl=n,kl=n,ll=f,ll=f,kn=f',
+                    ['cancel', 'associate']],
+                    [',gn=o,nk=l,gl=d,gl=d,nk=l,gn=o,gl=d,gl=d,gl=d,gl=d,gl=d,gn=o,nk=l,nk=l,ok=d',
+                    ['associate']],
+                    [',dk=c,ck=d,jc=d,ck=d,jc=d,ck=d,dk=c,dk=c,dk=c,ck=d,ck=d,jc=d,dk=c,ck=d,jd=c',
+                    ['associate']],
+                    [',jb=c,bc=j,jb=c,cc=m,bc=j,cc=m,jb=c,jb=c,bc=j,cc=m,bc=j,jb=c,jb=c,cc=m,jj=m',
+                    ['associate']],
+                    [',mm=l,mi=d,md=m,mm=l,md=m,mi=d,mm=l,mi=d,md=m,md=m,mi=d,md=m,md=m,md=m,li=m',
+                    ['associate']],
+                    [',gd=e,gd=e,ee=b,de=h,ee=b,ee=b,de=h,de=h,ee=b,de=h,de=h,ee=b,de=h,gd=e,gh=b',
+                    ['associate']],
+                    [',pk=i,pk=i,kp=c,ip=k,pk=i,ip=k,ip=k,kp=c,pk=i,kp=c,ip=k,pk=i,kp=c,pk=i,pc=k',
+                    ['associate']],
+                    [',ka=p,ka=p,fa=a,fa=a,jk=f,fa=a,fa=a,fa=a,fa=a,fa=a,jk=f,fa=a,ka=p,ka=p,jp=a',
+                    ['associate']],
+                    [',fl=i,fl=i,pj=f,fl=i,fl=i,jl=m,pj=f,pj=f,fl=i,fl=i,pj=f,fl=i,fl=i,jl=m,pm=i',
+                    ['associate']],
+                    [',fm=c,fm=c,fm=c,fm=c,ff=b,fm=c,ff=b,bm=a,ff=b,bm=a,fm=c,bm=a,bm=a,bm=a,fc=a',
+                    ['associate']],
+                    [',cc=i,hc=p,pp=i,pi=p,cc=i,ph=c,pp=i,hc=p,ph=c,ic=c,pp=i,pi=p,ph=c,pi=p,pc=h',
+                    ['cancel']],
+                    [',ad=d,da=d,kd=a,dn=k,nd=k,kd=a,da=d,dn=k,dk=a,dn=k,nd=k,ad=d,nd=k,dk=a,dd=n',
+                    ['cancel']],
+                    // [',gf=a,gh=p,hd=o,id=b,gj=b,dd=g,gi=d,gp=o,fd=h,pd=f,bd=d,gg=i,ad=p,go=f,gb=g,od=a,ga=h,jd=i,gd=j',
+                    // ['cancel']],
+                    [',il=l,bp=l,ia=a,dp=b,ap=k,ib=b,pp=d,ii=i,lp=a,lp=a,id=d,kp=i,bp=l,ik=k,ip=p',
+                    ['identity', 'cancel']],
+                    [',ae=e,ee=a,gg=e,ga=g,ae=e,ga=g,gm=a,ga=g,ae=e,me=g,ee=a,ga=g,ee=a,me=g,ge=m',
+                    ['cancel']],
+                    [',kn=l,ad=n,am=k,ap=l,en=n,dn=a,al=p,nn=e,mn=p,ln=k,aa=e,pn=m,ae=a,ak=m,an=d',
+                    ['cancel']],
+                    [',mb=m,bm=m,jb=j,mb=m,bm=m,jb=j,bm=m,bj=j,mb=m,bj=j,bm=m,jb=j,mb=m,jb=j,bb=b',
+                    ['identity', 'cancel']],
+                    [',gd=m,bm=l,mm=d,om=g,cm=m,dm=f,gg=o,gl=b,gf=d,lm=o,gc=g,fm=b,go=l,gb=f,gm=c',
+                    ['cancel']],
+                    [',pp=d,jl=j,ap=e,jd=p,je=a,jd=p,ja=d,dp=a,lp=p,je=a,jl=j,ep=j,ja=d,jj=e,jp=l',
+                    ['cancel']],
+                    [',nk=e,db=d,ak=d,de=k,pk=b,dc=e,dh=p,dn=b,bk=k,ck=p,dp=a,hk=n,ek=a,da=h,dk=c',
+                    ['cancel']]
+                ];
 
-                // Parse sequences and extract query/answer
-                function parseSequence(seqString) {
+                function parseSequence(seqString, mechanisms) {
                     const facts = seqString.split(',').filter(f => f.length > 0);
                     const lastFact = facts[facts.length - 1];
                     const answer = lastFact.split('=')[1];
                     const query = lastFact.split('=')[0] + '=';
                     const context = facts.slice(0, -1).join(', ') + ', ';
-                    return { context, query, answer, facts: facts.slice(0, -1) };
+                    return { context, query, answer, facts: facts.slice(0, -1), mechanisms };
                 }
 
                 // Generate hints based on mechanism type
@@ -290,35 +392,55 @@
                     }
                 }
 
-                function getExplanation(type, query, answer) {
-                    if (type === 'copy') {
-                        return `Correct! This sequence can be solved by <b>verbatim copying</b> since the exact fact "${query}${answer}" appears earlier in the sequence.`;
-                    } else if (type === 'commute') {
-                        const reversed = query[1] + query[0] + '=' + answer;
-                        return `Correct! This sequence can be solved by <b>commutative copying</b>. If "${reversed}" is in the sequence, and the operation is commutative, then "${query}${answer}".`;
-                    } else if (type === 'identity') {
-                        return `Correct! This sequence can be solved by <b>identity element recognition</b>. Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer.`;
-                    } else if (type === 'cancel') {
-                        return `Correct! This sequence can be solved by <b>closure-based cancellation</b>. By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid.`;
-                    } else if (type === 'associate') {
-                        return `Correct! This sequence can be solved by <b>associative composition</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd)= xy = z).`;
+                function getExplanation(mechanisms, query, answer) {
+                    const mechanismNames = {
+                        'copy': 'verbatim copying',
+                        'commute': 'commutative copying',
+                        'identity': 'identity element recognition',
+                        'cancel': 'closure-based cancellation',
+                        'associate': 'associative composition'
+                    };
+                    
+                    const mechanismExplanations = {
+                        'copy': `This is because the exact fact "${query}${answer}" appears earlier in the sequence`,
+                        'commute': `If the fact "${query[1]}${query[0]}=${answer}" is in the sequence, and the operation is commutative, then "${query}${answer}"`,
+                        'identity': `Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer`,
+                        'cancel': `By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid`,
+                        'associate': `By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd) = xy = z`
+                    };
+                    
+                    const primaryMechanism = mechanisms[0];
+                    const otherMechanisms = mechanisms.slice(1);
+                    
+                    let explanation = `Correct! This sequence can be solved by <b>${mechanismNames[primaryMechanism]}</b>. ${mechanismExplanations[primaryMechanism]}.`;
+                    
+                    if (otherMechanisms.length > 0) {
+                        const otherNames = otherMechanisms.map(m => mechanismNames[m]);
+                        if (otherNames.length === 1) {
+                            explanation += ` This could also be solved by <b>${otherNames[0]}</b>.`;
+                        } else {
+                            const lastName = otherNames.pop();
+                            explanation += ` This could also be solved by <b>${otherNames.join(', ')}, or ${lastName}</b>.`;
+                        }
                     }
+                    
+                    return explanation;
                 }
 
                 // Build all examples
                 const allExamples = [];
-                ['copy', 'commute', 'identity', 'cancel', 'associate'].forEach(type => {
-                    rawExamples[type].forEach(seq => {
-                        const parsed = parseSequence(seq);
-                        allExamples.push({
-                            type: type,
-                            sequence: parsed.context,
-                            query: parsed.query,
-                            answer: parsed.answer,
-                            facts: parsed.facts,
-                            hint: getHint(type, parsed.query, parsed.facts),
-                            explanation: getExplanation(type, parsed.query, parsed.answer)
-                        });
+                rawExamples.forEach(([seq, mechanisms]) => {
+                    const parsed = parseSequence(seq, mechanisms);
+                    // Pick a random mechanism for the hint
+                    const randomMechanism = mechanisms[Math.floor(Math.random() * mechanisms.length)];
+                    allExamples.push({
+                        mechanisms: mechanisms,
+                        sequence: parsed.context,
+                        query: parsed.query,
+                        answer: parsed.answer,
+                        facts: parsed.facts,
+                        hint: getHint(randomMechanism, parsed.query, parsed.facts),
+                        explanation: getExplanation(mechanisms, parsed.query, parsed.answer)
                     });
                 });
 
