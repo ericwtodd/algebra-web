@@ -170,11 +170,11 @@
                     However, key challenge is that <b>each token is a variable whose meaning changes between sequences</b>. 
                     For example, the symbol "g" might represent the identity in one sequence but a 90-degree rotation in another. 
                     Models can infer what each symbol means only from how it interacts with other symbols in-context.
-                    You can try to solve some example in-context algebra sequences for yourself <b><a href="#playtest">below</a></b>.
+                    You can try to solve some example in-context algebra sequences for yourself <b><a href="#tryit">below</a></b>.
                 </p>
                                 
                 
-                <div id="playtest" class="card" style="max-width: 1020px; margin: 30px auto;">
+                <div id="tryit" class="card" style="max-width: 1020px; margin: 30px auto;">
                     <div class="card-block" style="padding: 20px;">
                         <h3>Try It Yourself</h3>
                         <p>Can you predict the answer? Look at the sequence of facts below and try to figure out what comes next:</p>
@@ -577,7 +577,7 @@
 
                 <h2>Hypothesizing Model Mechanisms</h2>
                 <p>
-                   As you probably saw when <a href="#playtest">trying to solve</a> different sequences, it's possible that multiple algorithms could theoretically produce correct predictions. 
+                   As you probably saw when <a href="#tryit">trying to solve</a> different sequences, it's possible that multiple algorithms could theoretically produce correct predictions. 
                    This can make it challenging to identify which mechanisms the model actually implements. 
                    To disambiguate between potential mechanisms, we design five targeted data distributions to test specific algorithms that <i>can</i> solve algebra sequences when a corresponding set of facts is present in the context:
                    <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>, and <span class="mechanism-badge badge-associate">Associative Composition</span>.
