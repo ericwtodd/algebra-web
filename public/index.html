@@ -183,20 +183,21 @@
                             <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.8;">
                                 <span id="demo-sequence"></span><span id="demo-query" style="font-weight: bold; color: #0066cc;"></span>
                             </div>
-                            
-                            <div style="margin: 20px 0; display: flex; align-items: center; justify-content: space-between;">
-                                <div>
+                                                        
+                            <div style="margin: 20px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
                                     <label for="user-answer" style="font-weight: bold;">Your answer:</label>
-                                    <input type="text" id="user-answer" maxlength="1" style="width: 50px; height: 40px; font-size: 20px; text-align: center; margin: 0 10px; font-family: 'Courier New', monospace;" />
+                                    <input type="text" id="user-answer" maxlength="1" style="width: 50px; height: 40px; font-size: 20px; text-align: center; font-family: 'Courier New', monospace;" />
                                     <button id="check-answer" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">Check</button>
-                                    <button id="show-hint" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">Show Hint</button>
-                                    <button id="new-example" style="padding: 8px 20px; font-size: 16px; cursor: pointer; margin-left: 10px;">New Example</button>
+                                    <button id="show-hint" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">Show Hint</button>
                                 </div>
-                                <div style="text-align: right;">
-                                    <div id="score-display" style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">
-                                        Score: <span id="score-correct">0</span> / <span id="score-total">0</span> (<span id="score-percent">0</span>%)
-                                    </div>
-                                    <button id="reset-score" style="padding: 8px 20px; font-size: 14px; cursor: not-allowed; opacity: 0.5;" disabled>Reset Score</button>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <label for="difficulty-select" style="font-weight: bold;">Difficulty:</label>
+                                    <select id="difficulty-select" style="padding: 8px 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                                        <option value="easy">Easy</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
+                                    <button id="new-example" style="padding: 8px 20px; font-size: 16px; cursor: pointer;">New Example</button>
                                 </div>
                             </div>
                             
@@ -207,162 +208,221 @@
                 </div>               
 
                 <script>
-                // Data from paper - 10 examples per mechanism
-                // const rawExamples = {
-                //     copy: [',ja=a,ja=a,oo=a,ja=a,dj=d,dj=d,oo=a,dd=a,aj=a,od=j,da=o,da=o,ad=o,oj=o,ao=d,oa=d,oa=d,jo=o,do=j,do=j',
-                //         ',gj=h,hg=g,hb=b,jg=h,bb=h,bh=b,gb=j,bb=h,gj=h,bh=b,jh=j,gh=g,bg=j,jb=g,bb=h,hb=b,hh=h,jb=g,hj=j,hb=b',
-                //         ',lc=i,cc=l,hh=h,il=l,ga=p,hh=h,nn=p,ll=c,il=l,gh=g,ga=p,il=l,gn=h,ha=a,pp=g,li=l,gn=h,ng=h,hh=h,pp=g',
-                //         ',ca=g,gf=g,ga=f,co=f,ca=g,og=a,oa=c,of=o,cg=o,fa=a,gg=c,fo=o,af=a,og=a,oo=g,gc=o,go=a,oc=f,og=a,og=a',
-                //         ',mf=f,ff=e,fe=m,ee=f,em=e,ee=f,fe=m,mm=m,mf=f,ff=e,me=e,ff=e,mm=m,mf=f,em=e,fe=m,fe=m,em=e,ee=f,mf=f',
-                //         ',ek=e,ol=e,je=k,jn=o,en=d,ak=a,li=d,lk=l,gc=g,bd=a,dd=o,ee=a,kb=b,oe=n,ka=a,en=d,lk=l,ib=n,la=n,bd=a',
-                //         ',oj=g,hp=c,go=k,df=j,gg=j,fb=g,fl=b,hi=m,mm=p,kd=d,dg=l,jd=a,kg=g,ea=b,ic=m,ok=o,ja=f,fa=d,ag=e,ok=o',
-                //         ',pp=d,kn=f,ca=c,hb=g,if=f,ee=j,jf=n,nm=j,ff=e,me=f,mf=i,nn=k,km=e,me=f,ie=e,nk=f,cc=o,fn=m,hp=l,if=f',
-                //         ',ll=c,cc=l,hh=h,cc=l,ch=c,hl=l,lh=l,hl=l,cl=h,hl=l,hc=c,cl=h,ll=c,cc=l,ll=c,ch=c,cl=h,cl=h,lh=l,cl=h',
-                //         ',fh=f,ah=a,ah=a,ng=a,fn=h,hm=m,nm=g,fm=n,gg=h,nh=n,aa=m,nh=n,fg=m,af=g,hh=h,ng=a,am=h,ng=a,ha=a,fh=f'],
-                //     commute: [',ae=e,pn=c,lf=p,ol=l,mf=o,fn=k,od=d,mo=m,fo=f,nc=p,om=m,ol=l,mc=j,gh=e,pf=d,od=d,cp=k,eh=g,ee=a,pc=k',
-                //         ',jm=j,ii=j,ih=m,jj=m,ji=h,hm=h,hj=i,jj=m,jm=j,jh=i,mi=i,mm=m,jm=j,mj=j,ih=m,ii=j,ij=h,hj=i,im=i,mh=h',
-                //         ',gj=h,hd=d,dg=a,mn=d,gj=h,mn=d,md=g,jn=m,hh=h,gg=b,hb=b,fm=h,fg=d,bb=d,nj=m,jm=a,na=f,mg=n,ga=m,bh=b',
-                //         ',ph=p,nf=n,mm=h,mh=m,fl=l,il=n,gf=g,gi=f,jj=n,jg=i,in=g,gn=l,in=g,ll=f,mh=m,ph=p,fn=n,nj=f,mh=m,li=n',
-                //         ',ia=h,bl=g,dd=j,gl=f,op=d,mf=m,gg=b,ca=l,nc=f,lm=n,gb=h,mb=l,nm=h,gh=c,lh=b,bh=a,mm=c,ba=m,ng=m,cn=f',
-                //         ',ip=i,eh=p,mn=h,mp=m,he=p,hh=e,nm=h,pe=e,pe=e,ni=e,mh=i,mi=p,ni=e,mm=e,pp=p,ii=h,ee=h,in=e,hm=i,pi=i',
-                //         ',ni=h,ae=j,lc=a,la=p,cd=j,ja=d,pc=l,ff=f,ea=j,da=c,pd=a,cl=a,on=i,el=d,jl=c,ed=l,ho=g,io=n,hi=n,dp=a',
-                //         ',nn=d,na=i,dn=n,dn=n,aa=n,in=a,na=i,nd=n,da=a,ni=a,di=i,id=i,nn=d,nd=n,da=a,ii=n,na=i,nd=n,ia=d,an=i',
-                //         ',ml=i,gh=i,mm=j,oa=a,ng=i,cp=d,in=k,ki=h,jh=h,jm=m,gm=h,kl=g,li=m,kg=j,dc=e,gm=h,lg=k,hh=j,mk=h,gl=k'],
-                //         // ',kg=g,gk=g,gp=f,gf=p,pk=p,og=f,bp=g,pg=b,op=k,bb=k,pk=p,gf=p,go=b,pp=o,bo=f,bb=k,ff=k,kp=p,bo=f,fg=o', //This one might not be solvable via commutativity?
-                //     identity: [',dj=h,kp=e,gb=o,ak=j,no=o,pm=p,pp=f,aj=p,fp=a,ea=d,no=o,gn=g,cc=c,fp=a,oo=n,ek=m,kk=d,ep=h,pk=e,bn=b',
-                //         ',nk=a,an=l,ai=a,hc=h,fm=d,kn=a,eo=e,om=m,li=l,dd=m,bj=n,li=l,in=n,kj=l,nn=j,kj=l,oo=o,ib=b,gg=c,cp=p',
-                //         ',cg=p,ce=g,cg=p,be=p,lp=c,je=e,eh=k,kk=h,ai=m,ni=i,an=a,om=f,ff=n,gg=l,le=h,gh=e,hb=c,hh=p,lj=l,hj=h',
-                //         ',ik=l,ba=f,jk=i,ji=m,ll=i,jl=o,ae=a,im=k,ki=l,cc=o,ic=g,go=o,fa=b,gi=i,ep=p,ck=m,aa=e,ea=a,lg=l,gk=k',
-                //         ',ee=l,kd=d,mi=i,ai=m,ln=h,ek=e,le=c,gn=e,gk=g,ob=f,of=b,ke=e,pf=f,bp=b,ce=n,kk=k,ma=a,aa=i,le=c,kn=n',
-                //         ',jl=i,mp=k,ll=c,bf=f,km=p,nn=c,ap=f,jn=d,km=p,ao=k,bk=k,eo=f,pa=f,fa=p,fb=f,ko=a,ln=i,dd=i,ic=i,jc=j',
-                //         ',ai=h,jj=j,gg=j,ed=h,bh=p,hp=b,hd=j,ih=g,pb=d,dp=a,eb=i,jb=b,di=g,dd=m,hb=g,bh=p,ee=d,pd=b,eg=a,jp=p',
-                //         ',dd=j,jn=j,dd=j,jj=n,jn=j,jj=n,dn=d,dd=j,jm=d,jd=m,mm=j,jm=d,mj=d,nj=j,jn=j,dd=j,dm=n,nn=n,jj=n,nm=m',
-                //         ',ae=g,ep=i,kg=k,ge=e,kp=a,ka=e,pk=a,pg=p,ii=k,ie=a,pa=k,ag=a,ka=e,kk=i,ag=a,pk=a,ai=p,ik=g,ee=k,gg=g',
-                //         ',gm=o,gn=e,ej=e,mp=e,en=i,on=p,em=p,ii=j,po=b,nm=b,cn=m,ii=j,ei=n,ie=b,mn=b,bp=g,bb=m,pg=n,jb=b,jp=p'],
-                //     cancel: [',ja=c,jc=o,jc=o,jo=a,ii=i,mi=m,mi=m,jj=m,jo=a,ja=c,ai=a,oi=o,jj=m,jm=i,ci=c,ci=c,oi=o,jo=a,ii=i,ji=j',
-                //         ',ml=m,mo=a,mi=p,ip=m,lp=p,mi=p,pp=l,mi=p,pp=l,ml=m,ap=o,ip=m,ml=m,ap=o,mi=p,ip=m,mm=l,ma=o,op=a,mp=i',
-                //         ',di=n,hg=j,hm=h,hn=d,ji=g,ii=j,hh=n,di=n,mi=i,ji=g,hd=g,hg=j,gi=d,hh=n,hg=j,mi=i,hj=i,ni=h,ji=g,hi=m',
-                //         ',fk=b,fl=e,fl=e,lb=i,kb=e,bb=l,lb=i,fi=f,ib=b,fk=b,ff=i,bb=l,kb=e,fl=e,fe=l,eb=f,ff=i,fl=e,fl=e,fb=k',
-                //         ',fh=g,hk=c,hd=l,ih=d,hf=g,hg=k,hl=n,kh=c,hi=d,hn=e,gh=k,he=i,dh=l,hc=h,nh=e,ch=h,eh=i,kh=c,lh=n,hh=f',
-                //         ',gm=m,gf=f,og=o,gk=k,gd=d,dg=d,fg=f,gk=k,mg=m,gf=f,dg=d,gf=f,kg=k,fg=f,kg=k,gk=k,go=o,gk=k,dg=d,gg=g',
-                //         ',do=a,bo=p,ho=o,ho=o,cp=d,cc=o,eo=c,ch=c,cb=a,ce=h,ao=d,oo=h,do=a,cc=o,po=b,ca=p,ao=d,cb=a,cd=b,co=e',
-                //         ',nn=n,nc=c,nb=b,nc=c,nn=n,nn=n,bp=c,bp=c,nc=c,nn=n,nb=b,pp=n,pp=n,cp=b,pp=n,nb=b,nb=b,nb=b,nb=b,np=p',
-                //         ',mg=k,mg=k,gg=f,jg=g,ff=j,ff=j,mg=k,ff=j,fh=k,og=h,fc=g,fm=o,hg=m,fh=k,cg=j,fk=h,fj=f,kg=o,fo=m,fg=c',
-                //         ',hf=i,fe=m,mf=e,fh=i,pf=l,fn=f,ef=m,fh=i,fm=e,fp=l,fl=p,nf=f,fi=h,fi=h,hf=i,if=h,lf=p,lf=p,fp=l,ff=n'],
-                //     associate: [',kf=j,pk=f,pk=f,pj=e,kf=j,pk=f,pj=e,pk=f,kf=j,pj=e,kf=j,kf=j,pj=e,kf=j,pk=f,pk=f,pj=e,kf=j,pj=e,ff=e',
-                //         ',bc=d,bc=d,bc=d,mb=d,mb=d,bc=d,mb=d,md=b,mb=d,mb=d,mb=d,bc=d,md=b,bc=d,md=b,md=b,mb=d,bc=d,md=b,dc=b',
-                //         ',ha=m,ha=m,ha=m,ha=m,ha=m,ha=m,hh=g,ha=m,ha=m,ha=m,ha=m,ha=m,hp=a,hp=a,ha=m,ha=m,hh=g,ha=m,hp=a,gp=m',
-                //         ',bi=j,bb=i,bi=j,bj=g,bj=g,bj=g,bj=g,bb=i,bj=g,bj=g,bi=j,bb=i,bb=i,bj=g,bi=j,bj=g,bb=i,bi=j,bi=j,ii=g',
-                //         ',cc=j,cp=c,cp=c,cc=j,cp=c,cc=j,cc=j,ck=p,ck=p,cc=j,ck=p,ck=p,ck=p,cc=j,cc=j,ck=p,cp=c,cp=c,cc=j,jk=c',
-                //         ',eg=k,mb=e,mb=e,bg=m,bg=m,mb=e,bg=m,eg=k,eg=k,mb=e,mb=e,eg=k,eg=k,mb=e,eg=k,mb=e,eg=k,eg=k,bg=m,mm=k',
-                //         ',cj=d,ce=l,cj=d,cj=d,jd=e,ce=l,jd=e,ce=l,jd=e,ce=l,ce=l,ce=l,ce=l,cj=d,ce=l,cj=d,jd=e,cj=d,cj=d,dd=l',
-                //         ',de=g,md=a,md=a,ae=e,ae=e,de=g,de=g,de=g,ae=e,md=a,ae=e,de=g,ae=e,md=a,md=a,md=a,de=g,md=a,ae=e,mg=e',
-                //         ',hc=d,ck=p,dk=i,dk=i,ck=p,hc=d,hc=d,ck=p,hc=d,hc=d,ck=p,ck=p,hc=d,ck=p,ck=p,hc=d,hc=d,dk=i,hc=d,hp=i',
-                //         ',mm=c,me=a,mm=c,ej=m,me=a,mm=c,ej=m,mm=c,me=a,mm=c,me=a,mm=c,mm=c,ej=m,mm=c,ej=m,ej=m,mm=c,me=a,aj=c']
-                // };
-                // Data with sequences and their possible solution mechanisms
-                const rawExamples = [
+                // Easy examples
+                // TODO: Replace with curated easy examples
+                const rawEasyExamples = [
                     [',bb=h,jj=b,gb=j,gb=j,jb=g,hh=h,gg=b,jh=j,bh=b,hh=h,jg=h,gh=g,bj=g,hj=j,hh=h',
-                    ['copy', 'identity', 'associate']],
+                    ['copy', 'identity', 'associate'],
+                    {'copy': [2, 3], 'identity': [5, 7, 8, 9, 11, 13], 'associate': [2, 7, 11]}],
                     [',ci=c,cc=i,ck=e,ik=k,ei=e,cj=p,jp=e,ek=j,jc=p,ep=c,ij=j,ki=k,ej=i,ke=j,ke=j',
-                    ['copy']],
-                    [',kk=d,eg=l,nm=j,po=b,bg=g,gp=i,mj=d,jf=j,pi=l,mf=m,jd=h,hm=n,ig=b,hn=d,ig=b',
-                    ['copy']],
-                    [',nj=o,jn=o,of=n,ff=o,nj=o,oj=f,fh=f,hh=h,jj=n,jo=f,jj=n,jo=f,oh=o,on=h,hh=h',
-                    ['copy', 'identity', 'cancel']],
-                    [',jj=j,jc=c,jc=c,nc=j,cn=j,nj=n,cj=c,cn=j,jj=j,cn=j,jn=n,jj=j,cj=c,jj=j,jn=n',
-                    ['copy', 'identity']],
-                    [',mp=f,pp=n,pf=m,np=p,pf=m,mp=f,mn=m,pn=p,nm=m,mm=n,mf=p,pf=m,mf=p,mn=m,pn=p',
-                    ['copy', 'identity', 'cancel']],
-                    [',id=m,nn=n,ni=i,dd=n,id=m,in=i,dm=i,nd=d,nd=d,mm=n,md=i,im=d,in=i,mn=m,dd=n',
-                    ['copy']],
-                    [',ej=e,aa=g,gk=a,kg=a,ka=i,in=n,nc=a,cp=i,cc=k,jj=j,pa=n,cn=a,pg=k,ka=i,pg=k',
-                    ['copy']],
-                    [',bj=g,ob=i,hm=h,af=h,ok=o,ck=c,jo=e,jg=b,hn=f,cc=k,mh=h,gg=k,kg=g,ci=g,ci=g',
-                    ['copy']],
-                    [',pg=d,nm=n,hb=k,bb=n,ck=b,jj=i,cc=n,bc=i,dg=g,al=e,im=i,nn=k,mn=n,hk=j,cc=n',
-                    ['copy']],
-                    [',de=d,eg=g,eg=g,ee=e,de=d,ff=d,mm=f,fg=e,md=e,ef=f,fd=m,ee=e,fe=f,dd=g,df=m',
-                    ['commute']],
-                    [',ec=c,bb=e,bb=e,aa=m,ja=c,ac=j,jc=a,ea=a,ma=e,ac=j,mj=c,mm=a,ba=j,bj=a,ab=c',
-                    ['commute']],
-                    [',ah=b,ho=h,ah=b,oa=a,oa=a,ho=h,oa=a,aa=o,aa=o,bh=a,bo=b,oo=o,bh=a,ob=b,ao=a',
-                    ['commute', 'identity', 'cancel', 'associate']],
-                    [',bb=j,fo=o,ci=f,ll=i,lf=l,ol=f,oi=l,if=i,ic=f,ci=f,pb=e,cl=o,ll=i,oo=c,lc=o',
-                    ['commute']],
-                    [',la=o,oa=l,oi=o,ia=a,li=l,aa=i,al=o,li=l,la=o,oo=i,li=l,lo=a,il=l,ai=a,io=o',
-                    ['identity', 'commute', 'cancel', 'associate']],
-                    [',pp=p,np=n,ln=h,nh=e,hl=p,hh=n,ep=e,lp=l,ph=h,lh=p,nh=e,nh=e,ln=h,hl=p,hn=e',
-                    ['commute']],
-                    [',ob=b,bp=j,bd=g,jg=b,go=g,bj=p,jj=o,po=p,od=d,op=p,jp=d,gj=d,jp=d,ob=b,og=g',
-                    ['identity', 'commute', 'associate']],
-                    [',fd=a,gf=f,ga=a,gi=i,fi=d,da=i,ad=i,id=g,ia=f,ga=a,ff=i,gi=i,fa=g,ii=a,ig=i',
-                    ['identity', 'commute', 'associate']],
-                    [',ll=l,ln=n,ll=l,kn=l,nl=n,aa=l,an=k,ak=n,al=a,kl=k,ln=n,nl=n,ka=n,ln=n,nk=l',
-                    ['commute']],
-                    [',io=l,fi=k,lo=k,cf=f,ik=o,ll=o,if=k,go=c,io=l,kk=i,lf=g,ic=i,ko=g,ll=o,ol=k',
-                    ['commute']],
-                    [',bf=b,bf=b,ff=f,bb=a,ab=f,bb=a,bf=b,bf=b,ab=f,ff=f,ba=f,ba=f,bf=b,ff=f,fa=a',
-                    ['identity']],
-                    [',om=e,om=e,me=o,cc=c,co=o,me=o,oo=c,om=e,ee=c,mc=m,cc=c,cc=c,oo=c,me=o,ce=e',
-                    ['identity', 'associate']],
-                    [',dk=p,dd=k,kp=k,pp=p,pp=p,kd=p,pk=k,kp=k,kd=p,dk=p,kd=p,pp=p,pk=k,pp=p,dp=d',
-                    ['identity', 'cancel']],
-                    [',fa=h,kk=k,kf=f,fa=h,kf=f,ak=a,ha=f,ha=f,af=h,af=h,af=h,fh=a,aa=k,ha=f,kh=h',
-                    ['identity', 'cancel', 'associate']],
-                    [',ll=l,mn=c,dn=p,pf=c,lp=p,nm=c,fc=l,fd=m,mn=c,mc=d,mc=d,fl=f,np=l,nd=p,cl=c',
-                    ['identity', 'associate']],
-                    [',om=o,po=m,po=m,po=m,pp=o,po=m,mo=o,oo=p,mm=m,oo=p,om=o,mm=m,om=o,pp=o,mp=p',
-                    ['identity', 'cancel', 'associate']],
-                    [',gh=c,gh=c,hf=h,gh=c,hc=g,cg=f,cg=f,fc=c,hf=h,gg=h,gf=g,cg=f,cc=h,cc=h,ff=f',
-                    ['identity', 'cancel', 'associate']],
-                    [',lb=n,nk=n,gi=m,pi=f,ma=p,mi=g,jp=p,oo=o,bc=l,gm=j,pg=h,am=f,jf=f,if=p,kb=b',
-                    ['identity']],
-                    [',nj=o,gj=n,po=o,gn=p,ng=p,no=g,oo=n,li=e,ii=k,gj=n,ik=l,on=g,pp=p,jn=o,gp=g',
-                    ['identity']],
-                    [',of=a,oo=f,af=o,ga=a,og=o,og=o,ao=g,of=a,fg=f,oo=f,gf=f,of=a,gf=f,fo=a,gg=g',
-                    ['identity', 'cancel', 'associate']],
-                    [',ll=f,kl=n,ll=f,ll=f,ll=f,kl=n,kk=l,kk=l,kk=l,kk=l,kl=n,kl=n,ll=f,ll=f,kn=f',
-                    ['cancel', 'associate']],
-                    [',gn=o,nk=l,gl=d,gl=d,nk=l,gn=o,gl=d,gl=d,gl=d,gl=d,gl=d,gn=o,nk=l,nk=l,ok=d',
-                    ['associate']],
-                    [',dk=c,ck=d,jc=d,ck=d,jc=d,ck=d,dk=c,dk=c,dk=c,ck=d,ck=d,jc=d,dk=c,ck=d,jd=c',
-                    ['associate']],
-                    [',jb=c,bc=j,jb=c,cc=m,bc=j,cc=m,jb=c,jb=c,bc=j,cc=m,bc=j,jb=c,jb=c,cc=m,jj=m',
-                    ['associate']],
-                    [',mm=l,mi=d,md=m,mm=l,md=m,mi=d,mm=l,mi=d,md=m,md=m,mi=d,md=m,md=m,md=m,li=m',
-                    ['associate']],
-                    [',gd=e,gd=e,ee=b,de=h,ee=b,ee=b,de=h,de=h,ee=b,de=h,de=h,ee=b,de=h,gd=e,gh=b',
-                    ['associate']],
-                    [',pk=i,pk=i,kp=c,ip=k,pk=i,ip=k,ip=k,kp=c,pk=i,kp=c,ip=k,pk=i,kp=c,pk=i,pc=k',
-                    ['associate']],
-                    [',ka=p,ka=p,fa=a,fa=a,jk=f,fa=a,fa=a,fa=a,fa=a,fa=a,jk=f,fa=a,ka=p,ka=p,jp=a',
-                    ['associate']],
-                    [',fl=i,fl=i,pj=f,fl=i,jl=m,fl=i,pj=f,fl=i,pj=f,fl=i,pj=f,fl=i,fl=i,jl=m,pm=i',
-                    ['associate']],
-                    [',fm=c,fm=c,bm=a,fm=c,ff=b,fm=c,bm=a,ff=b,bm=a,ff=b,fm=c,bm=a,fm=c,bm=a,fc=a',
-                    ['associate']],
-                    [',cc=i,hc=p,pp=i,pi=p,cc=i,ph=c,pp=i,hc=p,ph=c,ic=c,pp=i,pi=p,ph=c,pi=p,pc=h',
-                    ['cancel']],
-                    [',ad=d,da=d,kd=a,dn=k,nd=k,kd=a,da=d,dn=k,dk=a,dn=k,nd=k,ad=d,nd=k,dk=a,dd=n',
-                    ['cancel']],
-                    // [',gf=a,gh=p,hd=o,id=b,gj=b,dd=g,gi=d,gp=o,fd=h,pd=f,bd=d,gg=i,ad=p,go=f,gb=g,od=a,ga=h,jd=i,gd=j',
-                    // ['cancel']],
-                    [',il=l,bp=l,ia=a,dp=b,ap=k,ib=b,pp=d,ii=i,lp=a,lp=a,id=d,kp=i,bp=l,ik=k,ip=p',
-                    ['identity', 'cancel']],
-                    [',ae=e,ee=a,gg=e,ga=g,ae=e,ga=g,gm=a,ga=g,ae=e,me=g,ee=a,ga=g,ee=a,me=g,ge=m',
-                    ['cancel']],
-                    [',kn=l,ad=n,am=k,ap=l,en=n,dn=a,al=p,nn=e,mn=p,ln=k,aa=e,pn=m,ae=a,ak=m,an=d',
-                    ['cancel']],
-                    [',mb=m,bm=m,jb=j,mb=m,bm=m,jb=j,bm=m,bj=j,mb=m,bj=j,bm=m,jb=j,mb=m,jb=j,bb=b',
-                    ['identity', 'cancel']],
-                    [',gd=m,bm=l,mm=d,om=g,cm=m,dm=f,gg=o,gl=b,gf=d,lm=o,gc=g,fm=b,go=l,gb=f,gm=c',
-                    ['cancel']],
-                    [',pp=d,jl=j,ap=e,jd=p,je=a,jd=p,ja=d,dp=a,lp=p,je=a,jl=j,ep=j,ja=d,jj=e,jp=l',
-                    ['cancel']],
-                    [',nk=e,db=d,ak=d,de=k,pk=b,dc=e,dh=p,dn=b,bk=k,ck=p,dp=a,hk=n,ek=a,da=h,dk=c',
-                    ['cancel']]
+                    ['copy'],
+                    {'copy': [13]}]
                 ];
+
+                // Hard examples
+                // Data with sequences and their possible solution mechanisms
+                const rawHardExamples = [
+                    [',nd=h,dm=n,nh=n,hd=d,md=n,dn=h,dh=d,dn=h,mm=h,mn=d,hm=m,nd=h,nn=m,dd=m,hm=m',
+                    ['copy', 'identity', 'associate'],
+                    {'copy': [10], 'identity': [2, 6], 'associate': [3, 13]}],
+                    [',nn=c,gn=j,nn=c,oo=c,no=j,gh=o,cn=n,nn=c,no=j,oh=n,no=j,cc=c,jg=o,nn=c,cn=n',
+                    ['copy', 'identity'],
+                    {'copy': [6], 'identity': [11]}],
+                    [',bb=f,lb=g,lb=g,fc=g,bc=l,fc=g,bg=b,gc=c,gc=c,gb=b,gf=f,gg=g,lc=f,gc=c,bb=f',
+                    ['copy', 'commute', 'cancel'],
+                    {'copy': [0],
+                    'commute': [0],
+                    'cancel': [['b', 'l', 'g', 'c', 'f'],
+                        ['l', 'f', 'b', 'g'],
+                        ['l', 'f', 'b'],
+                        ['f', 'b', 'g']]}],
+                    [',bb=j,kj=b,ia=a,kj=b,ii=i,ja=i,ia=a,ji=j,bb=j,jk=b,ik=k,ik=k,ka=j,ki=k,ia=a',
+                    ['copy', 'identity'],
+                    {'copy': [2, 6], 'identity': [4, 7, 13]}],
+                    [',dk=c,ba=b,fd=p,oo=o,ij=n,mj=h,fd=p,ia=i,fo=f,mn=b,am=m,im=j,kd=c,fp=o,oo=o',
+                    ['copy', 'commute', 'identity'],
+                    {'copy': [3], 'commute': [3], 'identity': [3, 8]}],
+                    [',pf=e,be=b,pi=b,il=p,lb=f,fb=i,eb=b,ef=f,be=b,pl=i,le=l,pf=e,pl=i,ii=f,il=p',
+                    ['copy'],
+                    {'copy': [3]}],
+                    [',ll=f,fp=a,pf=a,ff=c,pa=p,aa=a,fa=f,cc=p,ca=c,af=f,lf=p,cl=a,lf=p,ll=f,pf=a',
+                    ['copy', 'commute', 'cancel'],
+                    {'copy': [2],
+                    'commute': [1],
+                    'cancel': [['a', 'l', 'c', 'f', 'p'],
+                        ['a', 'c', 'f', 'p'],
+                        ['a', 'p'],
+                        ['a', 'c', 'f', 'p']]}],
+                    [',dp=d,dg=i,gg=a,ag=p,pg=g,gd=i,ab=i,ag=p,ba=i,pa=a,dp=d,bb=a,aa=g,dg=i,gg=a',
+                    ['copy', 'commute', 'cancel'],
+                    {'copy': [2],
+                    'commute': [2],
+                    'cancel': [['a', 'i', 'd', 'g', 'p'],
+                        ['a', 'p', 'g', 'i'],
+                        ['a', 'i'],
+                        ['a', 'p', 'g', 'i']]}],
+                    [',no=o,bb=o,cc=d,bn=b,cc=d,ob=n,bo=n,oo=b,dc=m,dd=c,dc=m,mc=c,cd=m,bo=n,dd=c',
+                    ['copy', 'commute', 'cancel', 'associate'],
+                    {'copy': [9],
+                    'commute': [9],
+                    'cancel': [['c', 'd', 'm'], ['c', 'm'], ['c', 'm'], ['c', 'm']],
+                    'associate': [11, 2, 10]}],
+                    [',ad=g,da=g,dg=a,gd=a,pp=p,aa=p,ap=a,pg=g,pa=a,gp=g,pa=a,pd=d,dp=d,gp=g,pd=d',
+                    ['copy', 'commute', 'identity'],
+                    {'copy': [11], 'commute': [12], 'identity': [4, 6, 9, 12, 13]}],
+                    [',lk=e,kl=e,ak=k,ke=l,el=k,el=k,ll=a,ll=a,al=l,ke=l,al=l,ek=l,la=l,le=k,ka=k',
+                    ['commute', 'identity', 'associate'],
+                    {'commute': [2], 'identity': [12], 'associate': [1, 7, 5]}],
+                    [',gp=k,pe=c,dg=p,gk=c,kp=d,de=k,pd=g,de=k,gk=c,cg=g,ep=c,pd=g,gd=p,pc=p,cp=p',
+                    ['commute', 'identity', 'associate'],
+                    {'commute': [13], 'identity': [13], 'associate': [9, 12]}],
+                    [',bi=i,gi=l,ig=l,lb=l,bg=g,ff=b,dd=g,ii=d,db=d,dd=g,dl=i,fg=i,fl=d,bf=f,bl=l',
+                    ['commute', 'identity', 'associate'],
+                    {'commute': [3], 'identity': [3, 8], 'associate': [0, 2]}],
+                    [',og=g,bl=i,ce=o,gg=o,bn=m,ce=o,ib=b,nh=b,ni=n,bl=i,bn=m,pe=g,dl=b,ii=i,ld=b',
+                    ['commute'],
+                    {'commute': [12]}],
+                    [',cc=d,dd=f,fd=d,fc=c,cd=k,dd=f,kd=c,dd=f,cc=d,ff=f,kc=f,cc=d,df=d,ck=f,dk=c',
+                    ['commute'],
+                    {'commute': [6]}],
+                    [',cj=l,cl=j,lj=m,ll=c,ml=l,mj=j,cc=m,ml=l,jc=l,cc=m,jl=m,cm=c,lj=m,cc=m,mc=c',
+                    ['commute', 'identity', 'cancel', 'associate'],
+                    {'commute': [11],
+                    'identity': [11],
+                    'cancel': [['l', 'c', 'j', 'm'], ['l', 'j', 'm'], ['l', 'j'], ['l', 'm']],
+                    'associate': [4, 3]}],
+                    [',lj=b,fj=l,jn=f,nf=c,cb=f,gj=j,bn=g,jl=b,ll=j,lc=n,jn=f,dc=j,gd=d,gb=b,jf=l',
+                    ['commute'],
+                    {'commute': [1]}],
+                    [',cn=c,cg=n,fa=n,ic=d,nc=c,gf=d,fi=c,gi=a,nc=c,na=a,fi=c,ng=g,ag=c,cf=g,ig=a',
+                    ['commute'],
+                    {'commute': [7]}],
+                    [',je=j,ka=i,oc=i,ef=f,ia=f,fn=i,ko=n,ji=a,ka=i,ei=i,ee=e,ae=a,ie=i,ik=j,ij=a',
+                    ['commute'],
+                    {'commute': [7]}],
+                    [',ae=o,ac=e,ok=d,do=o,oo=c,de=e,fd=f,df=f,kk=e,ee=a,ek=f,cc=f,ko=d,ka=c,od=o',
+                    ['commute', 'identity'],
+                    {'commute': [3], 'identity': [6]}],
+                    [',id=n,id=n,ii=d,dd=i,nn=n,id=n,nd=d,id=n,dn=d,nn=n,dn=d,nn=n,dn=d,nn=n,ni=i',
+                    ['identity', 'cancel', 'associate'],
+                    {'identity': [4, 8, 9, 10, 11, 12, 13],
+                    'cancel': [['n', 'i', 'd'], ['n', 'd'], ['n', 'd'], ['d']],
+                    'associate': [6, 3]}],
+                    [',nn=n,nm=m,bj=b,kk=e,pp=k,dm=n,cm=i,pb=e,ml=c,pj=p,eb=k,cd=l,nc=c,dc=l,kj=k',
+                    ['identity', 'associate'],
+                    {'identity': [2, 9], 'associate': [10, 2]}],
+                    [',ji=l,oi=g,go=h,ng=l,ji=l,io=g,hi=i,gh=g,gl=o,no=j,jg=n,gh=g,ij=l,hg=g,oh=o',
+                    ['identity'],
+                    {'identity': [7, 11]}],
+                    [',gh=a,an=a,jd=j,oa=k,mg=p,mg=p,pk=g,cc=n,cm=h,hp=o,ca=p,jd=j,oh=p,cc=n,on=o',
+                    ['identity'],
+                    {'identity': [1]}],
+                    [',lo=o,np=p,mm=f,fo=l,ai=f,fi=m,ng=g,aa=i,mm=f,bp=c,om=i,nk=k,ah=l,pn=p,bn=b',
+                    ['identity'],
+                    {'identity': [13]}],
+                    [',ij=j,ki=k,kj=o,ko=j,oo=a,ki=k,gj=k,kp=g,kg=p,pm=o,pa=j,jp=i,ia=a,pg=a,ip=p',
+                    ['identity'],
+                    {'identity': [1, 5]}],
+                    [',ae=a,af=d,ap=e,mo=d,of=j,mj=a,op=a,ea=a,fj=o,em=m,ma=f,ap=e,dj=m,dm=e,ef=f',
+                    ['identity', 'associate'],
+                    {'identity': [0], 'associate': [10, 9]}],
+                    [',gg=g,oo=c,gg=g,gg=g,go=o,go=o,go=o,gg=g,gg=g,gg=g,oc=g,og=o,co=g,co=g,gc=c',
+                    ['identity', 'cancel', 'associate'],
+                    {'identity': [0, 2, 3, 7, 8, 9, 11],
+                    'cancel': [['c', 'g', 'o'], ['g', 'o'], ['g', 'o'], ['g']],
+                    'associate': [5, 1]}],
+                    [',pd=d,ba=e,dp=d,ab=e,am=l,hh=o,bi=d,hc=h,lg=b,di=a,ea=g,pe=e,ep=e,al=i,ap=a',
+                    ['identity'],
+                    {'identity': [2, 12]}],
+                    [',fa=d,ep=p,nj=f,jb=p,fn=a,ed=d,jp=a,ge=g,gb=f,ag=p,jg=e,np=e,dd=f,gb=f,ee=e',
+                    ['identity', 'associate'],
+                    {'identity': [7], 'associate': [10, 7]}],
+                    [',ii=a,am=a,ia=m,ii=a,mm=m,am=a,ia=m,mm=m,am=a,am=a,ia=m,ia=m,am=a,am=a,ia=m,ia=m,mm=m,mm=m,ia=m,im=i',
+                    ['identity', 'cancel'],
+                    {'identity': [1, 4, 5, 7, 8, 9, 12, 13, 16, 17],
+                    'cancel': [['a', 'i', 'm'], ['a', 'm'], ['a', 'm'], ['a', 'm']]}],
+                    [',fb=n,ba=c,bk=b,bn=g,kb=b,cb=k,cb=k,kb=b,ab=c,bc=k,ab=c,cb=k,bf=n,nb=g,bg=a,gb=a,cb=k,bg=a,ba=c,bb=f',
+                    ['cancel'],
+                    {'cancel': [['a', 'n', 'b', 'g', 'k', 'c', 'f'],
+                        ['a', 'n', 'b', 'g', 'k', 'c'],
+                        ['a', 'n', 'b', 'g', 'k', 'c'],
+                        ['a', 'n', 'b', 'g', 'k', 'c']]}],
+                    [',cc=c,ic=i,ic=i,ai=c,ai=c,ic=i,ai=c,ic=i,aa=i,ai=c,ai=c,cc=c,ic=i,aa=i,cc=c,aa=i,ai=c,ic=i,ic=i,ac=a',
+                    ['identity', 'cancel'],
+                    {'identity': [0, 1, 2, 5, 7, 11, 12, 14, 17, 18],
+                    'cancel': [['a', 'c', 'i'], ['c', 'i'], ['c', 'i'], ['c', 'i']]}],
+                    [',bf=b,pb=n,pb=n,pb=n,bp=n,nb=p,fb=b,bf=b,bn=p,nb=p,nb=p,fb=b,bp=n,pb=n,bf=b,nb=p,bf=b,pb=n,fb=b,bb=f',
+                    ['cancel'],
+                    {'cancel': [['n', 'f', 'b', 'p'],
+                        ['n', 'b', 'p'],
+                        ['n', 'b', 'p'],
+                        ['n', 'b', 'p']]}],
+                    [',de=n,pl=g,pp=l,pl=g,ee=a,pd=o,po=p,ge=p,pg=a,oe=e,le=o,pd=o,pn=e,ae=l,pa=n,de=n,pn=e,oe=e,ne=g,pe=d',
+                    ['cancel'],
+                    {'cancel': [['a', 'n', 'e', 'o', 'l', 'd', 'g', 'p'],
+                        ['a', 'n', 'e', 'o', 'l', 'g', 'p'],
+                        ['a', 'n', 'e', 'o', 'l', 'g', 'p'],
+                        ['a', 'n', 'e', 'o', 'l', 'g', 'p']]}],
+                    [',eg=g,gp=e,dp=g,gp=e,ee=e,ed=d,ed=d,ee=e,pp=d,ed=d,eg=g,pp=d,dp=g,pp=d,ee=e,ed=d,ee=e,gp=e,pp=d,ep=p',
+                    ['identity', 'cancel'],
+                    {'identity': [4, 7, 14, 16],
+                    'cancel': [['d', 'g', 'e', 'p'],
+                        ['d', 'g', 'e'],
+                        ['d', 'g', 'e'],
+                        ['d', 'g', 'e']]}],
+                    [',gh=j,pj=j,ej=h,go=n,ge=p,lj=n,jj=p,ej=h,gn=h,ge=p,gg=l,nj=l,oj=g,hj=e,gp=g,gl=e,ej=h,gl=e,lj=n,gj=o',
+                    ['cancel'],
+                    {'cancel': [['n', 'h', 'e', 'o', 'l', 'g', 'j', 'p'],
+                        ['n', 'h', 'e', 'l', 'g', 'j', 'p'],
+                        ['n', 'h', 'e', 'l', 'g', 'j', 'p'],
+                        ['n', 'h', 'e', 'l', 'g', 'j', 'p']]}],
+                    [',ad=d,dp=a,ad=d,ad=d,pd=a,da=d,ad=d,pd=a,da=d,dp=a,da=d,ad=d,da=d,ad=d,pd=a,dp=a,da=d,pd=a,pd=a,dd=p',
+                    ['cancel'],
+                    {'cancel': [['a', 'd', 'p'], ['a', 'd'], ['a', 'd'], ['a', 'd']]}],
+                    [',hk=c,jn=f,ck=k,ok=h,jl=k,jc=j,nk=b,bk=j,ik=l,fk=o,lk=n,jj=h,jh=b,ji=c,jb=o,jh=b,jf=l,jo=n,kk=f,jk=i',
+                    ['cancel'],
+                    {'cancel': [['n', 'h', 'i', 'b', 'o', 'l', 'k', 'j', 'c', 'f'],
+                        ['n', 'h', 'b', 'o', 'l', 'k', 'j', 'c', 'f'],
+                        ['n', 'h', 'b', 'o', 'l', 'k', 'j', 'c', 'f'],
+                        ['n', 'h', 'b', 'o', 'l', 'k', 'j', 'c', 'f']]}],
+                    [',mc=p,bm=c,bb=p,bb=p,mc=p,bm=c,cc=b,mc=p,cc=b,bm=c,bm=c,mc=p,bb=p,bp=b,pc=c,bp=b,pc=c,cc=b,pc=c,bc=m',
+                    ['cancel'],
+                    {'cancel': [['c', 'b', 'p', 'm'],
+                        ['c', 'b', 'p'],
+                        ['c', 'b', 'p'],
+                        ['c', 'b', 'p']]}],
+                    [',nl=g,pl=n,nl=g,pl=n,pl=n,pl=n,ll=o,ll=o,nl=g,nl=g,ll=o,ll=o,nl=g,ll=o,po=g',
+                    ['associate'],
+                    {'associate': [9, 10, 5]}],
+                    [',ll=i,ll=i,il=k,ll=i,il=k,ll=i,ll=i,ll=i,ll=i,kl=e,il=k,kl=e,il=k,kl=e,ii=e',
+                    ['associate'],
+                    {'associate': [11, 3, 12]}],
+                    [',cj=j,cj=j,gj=c,jj=g,gj=c,gj=c,jj=g,cj=j,cj=j,gj=c,cj=j,gj=c,cj=j,gj=c,gg=j',
+                    ['associate'],
+                    {'associate': [6, 0, 5]}],
+                    [',co=a,co=a,jb=c,bo=j,bo=j,co=a,jb=c,bo=j,jb=c,bo=j,co=a,co=a,bo=j,jb=c,jj=a',
+                    ['associate'],
+                    {'associate': [5, 13, 9]}],
+                    [',cm=c,cc=n,cn=m,cn=m,cc=n,cn=m,cn=m,cn=m,cm=c,cm=c,cc=n,cm=c,cn=m,cc=n,nn=c',
+                    ['associate'],
+                    {'associate': [11, 10, 6]}],
+                    [',ko=i,kk=o,ko=i,oo=d,oo=d,kk=o,ko=i,oo=d,kk=o,ko=i,kk=o,kk=o,kk=o,oo=d,ki=d',
+                    ['cancel', 'associate'],
+                    {'cancel': [['k', 'i', 'o'], ['i', 'o'], ['i', 'o'], []],
+                    'associate': [5, 0, 7]}],
+                    [',hb=d,dh=b,dd=h,dh=b,hb=d,hb=d,dd=h,dh=b,hb=d,hb=d,hb=d,dh=b,dd=h,hb=d,bb=h',
+                    ['associate'],
+                    {'associate': [4, 12, 1]}],
+                    [',km=g,km=g,km=g,ek=d,km=g,ek=d,eg=h,km=g,ek=d,eg=h,eg=h,km=g,km=g,ek=d,dm=h',
+                    ['associate'],
+                    {'associate': [6, 0, 3]}],
+                    [',ij=j,ij=j,jj=l,ij=j,jj=l,gj=i,gj=i,gj=i,gj=i,jj=l,ij=j,jj=l,ij=j,ij=j,gl=j',
+                    ['associate'],
+                    {'associate': [11, 8, 12]}],
+                    [',ip=g,ah=i,ip=g,hp=i,ip=g,ip=g,ah=i,ip=g,ip=g,hp=i,hp=i,ah=i,ip=g,hp=i,ai=g',
+                    ['associate'],
+                    {'associate': [6, 3, 4]}]
+                ];               
 
                 function parseSequence(seqString, mechanisms) {
                     const facts = seqString.split(',').filter(f => f.length > 0);
@@ -392,7 +452,7 @@
                     }
                 }
 
-                function getExplanation(mechanisms, query, answer) {
+                function getExplanation(mechanisms, query, answer, relevantFacts, facts, selectedFacts) {
                     const mechanismNames = {
                         'copy': 'verbatim copying',
                         'commute': 'commutative copying',
@@ -401,50 +461,103 @@
                         'associate': 'associative composition'
                     };
                     
-                    const mechanismExplanations = {
-                        'copy': `This is because the exact fact "${query}${answer}" appears earlier in the sequence`,
-                        'commute': `If the fact "${query[1]}${query[0]}=${answer}" is in the sequence, and the operation is commutative, then "${query}${answer}"`,
-                        'identity': `Finding a fact that leaves variables unchanged (like "xy=x" or "xy=y") reveals an identity element in the sequence. Applying the identity rule tells us the other element is the answer`,
-                        'cancel': `By tracking which variables belong to the same group as the query (i.e., the closure) and eliminating invalid answers using the cancellation law, only "${answer}" remains valid`,
-                        'associate': `By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd) = xy = z`
-                    };
-                    
                     const primaryMechanism = mechanisms[0];
                     const otherMechanisms = mechanisms.slice(1);
                     
-                    let explanation = `This sequence can be solved by <b>${mechanismNames[primaryMechanism]}</b>. ${mechanismExplanations[primaryMechanism]}.`;
+                    let explanation = '';
                     
-                    if (otherMechanisms.length > 0) {
-                        const otherNames = otherMechanisms.map(m => mechanismNames[m]);
-                        if (otherNames.length === 1) {
-                            explanation += ` This could also be solved by <b>${otherNames[0]}</b>.`;
-                        } else {
-                            const lastName = otherNames.pop();
-                            explanation += ` This could also be solved by <b>${otherNames.join(', ')}, or ${lastName}</b>.`;
+                    // Get the actual fact being used for this mechanism
+                    const factIndex = selectedFacts && selectedFacts[primaryMechanism];
+                    const actualFact = (factIndex !== undefined && facts) ? facts[factIndex] : null;
+                    
+                    if (primaryMechanism === 'cancel' && relevantFacts && relevantFacts['cancel'] && facts) {
+                        // Cancellation explanation (keep as before)
+                        const [closure, answerClosure, leftCancel, rightCancel] = relevantFacts['cancel'];
+                        const leftVar = query[0];
+                        const rightVar = query[1];
+                        
+                        let exampleFact = null;
+                        for (let fact of facts) {
+                            const factParts = fact.split('=');
+                            if (factParts.length === 2) {
+                                const factLeft = factParts[0][0];
+                                const factRight = factParts[0][1];
+                                const factAnswer = factParts[1];
+                                
+                                if ((factLeft === leftVar || factRight === rightVar) && answerClosure.includes(factAnswer)) {
+                                    exampleFact = fact;
+                                    break;
+                                }
+                            }
                         }
+                        
+                        explanation = `This sequence can be solved by <b>${mechanismNames['cancel']}</b>. `;
+                        explanation += `<br><br>Tracking which variables belong to the same group as the query '${query}' (i.e., the closure) shows the possible valid answers are {${closure.join(', ')}}.`;
+                        explanation += `<br><br>The cancellation law eliminates invalid answers by looking at facts with '${leftVar}' on the left or '${rightVar}' on the right.`;
+                        
+                        if (exampleFact) {
+                            const exampleAnswer = exampleFact.split('=')[1];
+                            explanation += ` For example, seeing a fact like "${exampleFact}" tells us that '${exampleAnswer}' can be ruled out as a potential answer to "${query}".`;
+                        }
+                        
+                        explanation += ` Applying this cancellation law across facts that share a variable with the query gives a cancellation set of {${answerClosure.join(', ')}}.`;
+                        explanation += `<br><br>Taking the difference between the two sets: {${closure.join(', ')}} - {${answerClosure.join(', ')}} = {${answer}}, leaving ${answer} as the only remaining valid answer.`;
+                        
+                    } else if (primaryMechanism === 'copy' && actualFact) {
+                        explanation = `This sequence can be solved by <b>${mechanismNames['copy']}</b>. The exact fact "${actualFact}" appears earlier in the sequence.`;
+                                            
+                    } else if (primaryMechanism === 'commute' && actualFact) {
+                        explanation = `This sequence can be solved by <b>${mechanismNames['commute']}</b>. If the fact "${actualFact}" is in the sequence, and the operation is commutative, then "${query}${answer}".`;
+
+                    } else if (primaryMechanism === 'identity' && actualFact) {
+                        const parts = actualFact.split('=');
+                        const leftPart = parts[0];
+                        const rightPart = parts[1];
+
+                        const identityVar = leftPart[0] === rightPart ? leftPart[1] : leftPart[0];
+                        
+                        explanation = `This sequence can be solved by <b>${mechanismNames['identity']}</b>. The fact "${actualFact}" shows that '${identityVar}' is an identity element (it leaves other variables unchanged). Applying the identity rule to the query "${query}" tells us the answer is ${answer}.`;
+                    
+                    } else if (primaryMechanism === 'associate' && factIndex !== undefined && facts) {
+                        const triplet = Array.isArray(factIndex) ? factIndex : [factIndex];
+                        if (triplet.length === 3) {
+                            const fact1 = facts[triplet[0]];
+                            const fact2 = facts[triplet[1]];
+                            const fact3 = facts[triplet[2]];
+                            explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${fact1}", "${fact2}", and "${fact3}" together, the correct answer can be determined using the associative law.`;
+                        } else {
+                            explanation =  `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd) = xy = z`
+                        }
+                    // } else if (primaryMechanism === 'associate' && actualFact) {
+                    //     explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining facts together using the associative law, the correct answer can be determined.`;
+                        
+                    } else {
+                        // Fallback to generic explanation
+                        const mechanismExplanations = {
+                            'copy': `This is because the exact fact "${query}${answer}" appears earlier in the sequence`,
+                            'commute': `If the fact "${query[1]}${query[0]}=${answer}" is in the sequence, and the operation is commutative, then "${query}${answer}"`,
+                            'identity': `Finding a fact that leaves variables unchanged reveals an identity element. Applying the identity rule tells us the other element is the answer`,
+                            'associate': `By chaining facts together, the correct answer can be determined using the associative law`
+                        };
+                        explanation = `This sequence can be solved by <b>${mechanismNames[primaryMechanism]}</b>. ${mechanismExplanations[primaryMechanism]}.`;
                     }
                     
+                    if (otherMechanisms.length > 0) {
+                        const otherLinks = otherMechanisms.map(m => 
+                            `<b>${mechanismNames[m]}</b>`
+                        );
+                        if (otherLinks.length === 1) {
+                            explanation += ` This could also be solved by ${otherLinks[0]}.`;
+                        } else {
+                            const lastLink = otherLinks.pop();
+                            explanation += ` This could also be solved by ${otherLinks.join(', ')}, or ${lastLink}.`;
+                        }
+                    }
+
                     return explanation;
                 }
 
-                // Build all examples
-                const allExamples = [];
-                rawExamples.forEach(([seq, mechanisms]) => {
-                    const parsed = parseSequence(seq, mechanisms);
-                    // Pick a random mechanism for the hint
-                    const randomMechanism = mechanisms[Math.floor(Math.random() * mechanisms.length)];
-                    allExamples.push({
-                        mechanisms: mechanisms,
-                        sequence: parsed.context,
-                        query: parsed.query,
-                        answer: parsed.answer,
-                        facts: parsed.facts,
-                        hint: getHint(randomMechanism, parsed.query, parsed.facts),
-                        explanation: getExplanation(mechanisms, parsed.query, parsed.answer)
-                    });
-                });
-
-                // Shuffle the examples array
+                // Shuffle function
                 function shuffleArray(array) {
                     const shuffled = [...array];
                     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -454,97 +567,308 @@
                     return shuffled;
                 }
 
-                const shuffledExamples = shuffleArray(allExamples);
-                let currentExample = 0;
-                let scoreCorrect = 0;
-                let scoreTotal = 0;
-
-                function updateScoreDisplay() {
-                    document.getElementById('score-correct').textContent = scoreCorrect;
-                    document.getElementById('score-total').textContent = scoreTotal;
-                    const percent = scoreTotal > 0 ? Math.round((scoreCorrect / scoreTotal) * 100) : 0;
-                    document.getElementById('score-percent').textContent = percent;
+                function highlightFactsInSequence(sequenceText, factIndices) {
+                    if (!factIndices) {
+                        return sequenceText;
+                    }
                     
-                    // Enable reset button after 10 attempts
-                    const resetButton = document.getElementById('reset-score');
-                    if (scoreTotal >= 10) {
-                        resetButton.disabled = false;
-                        resetButton.style.cursor = 'pointer';
-                        resetButton.style.opacity = '1';
+                    // Convert single index to array
+                    const indices = Array.isArray(factIndices) ? factIndices : [factIndices];
+                    
+                    if (indices.length === 0) {
+                        return sequenceText;
+                    }
+                    
+                    const facts = sequenceText.split(', ');
+                    const highlightedFacts = facts.map((fact, idx) => {
+                        if (indices.includes(idx)) {
+                            return `<span style="background-color: #fff3cd; padding: 2px 4px; border-radius: 3px; font-weight: bold;">${fact}</span>`;
+                        }
+                        return fact;
+                    });
+                    
+                    return highlightedFacts.join(', ');
+                }
+
+                function makeExplanationClickable(explanationHtml, mechanisms, currentMechanism) {
+                    const mechanismNames = {
+                        'copy': 'verbatim copying',
+                        'commute': 'commutative copying',
+                        'identity': 'identity element recognition',
+                        'cancel': 'closure-based cancellation',
+                        'associate': 'associative composition'
+                    };
+                    
+                    let result = explanationHtml;
+                    
+                    // Make each mechanism name clickable
+                    mechanisms.forEach(mechanism => {
+                        const name = mechanismNames[mechanism];
+                        const isActive = mechanism === currentMechanism;
+                        const style = isActive 
+                            ? 'font-weight: bold; text-decoration: underline; cursor: pointer; color: #025aa5;'
+                            : 'text-decoration: underline; cursor: pointer; color: #0066cc;';
+                        
+                        const clickableLink = `<span class="mechanism-link" data-mechanism="${mechanism}" style="${style}">${name}</span>`;
+                        result = result.replace(new RegExp(`<b>${name}</b>`, 'g'), clickableLink);
+                    });
+                    
+                    return result;
+                }
+
+                // Build examples from both easy and hard sets
+                const allEasyExamples = [];
+                const allHardExamples = [];
+                
+                function buildExamples(rawArray, targetArray) {
+                    rawArray.forEach(item => {
+                        const [seq, mechanisms, relevantFacts] = item;
+                        const parsed = parseSequence(seq, mechanisms);
+                        const randomMechanism = mechanisms[Math.floor(Math.random() * mechanisms.length)];
+                        const reorderedMechanisms = [randomMechanism, ...mechanisms.filter(m => m !== randomMechanism)];
+                        
+                        // For each mechanism, pick a single random fact from the available options
+                        const selectedFacts = {};
+                        for (let mechanism in relevantFacts) {
+                            if (mechanism === 'cancel') {
+                                selectedFacts[mechanism] = relevantFacts[mechanism]; // Keep all cancel data
+                            } else if (mechanism === 'associate') {
+                                selectedFacts[mechanism] = relevantFacts[mechanism]; // Keep all 3 facts for associativity
+                            } else if (Array.isArray(relevantFacts[mechanism]) && relevantFacts[mechanism].length > 0) {
+                                // Pick one random fact index for copy/commute/identity
+                                const randomIndex = Math.floor(Math.random() * relevantFacts[mechanism].length);
+                                selectedFacts[mechanism] = relevantFacts[mechanism][randomIndex];
+                            }
+                        }
+                        
+                        targetArray.push({
+                            mechanisms: mechanisms,
+                            sequence: parsed.context,
+                            query: parsed.query,
+                            answer: parsed.answer,
+                            facts: parsed.facts,
+                            relevantFacts: relevantFacts,
+                            selectedFact: selectedFacts, // Single fact per mechanism
+                            hint: getHint(randomMechanism, parsed.query, parsed.facts),
+                            explanation: getExplanation(reorderedMechanisms, parsed.query, parsed.answer, relevantFacts, parsed.facts, selectedFacts),
+                            hintMechanism: randomMechanism
+                        });
+                    });
+                }
+                
+                buildExamples(rawEasyExamples, allEasyExamples);
+                buildExamples(rawHardExamples, allHardExamples);
+
+                // Shuffle both arrays
+                const shuffledEasyExamples = shuffleArray(allEasyExamples);
+                const shuffledHardExamples = shuffleArray(allHardExamples);
+                
+                // Track current difficulty and indices
+                let currentDifficulty = 'easy';
+                let easyIndex = 0;
+                let hardIndex = 0;
+                let currentViewedMechanism = null; // Track which mechanism user is currently viewing
+
+                function getCurrentExamples() {
+                    return currentDifficulty === 'easy' ? shuffledEasyExamples : shuffledHardExamples;
+                }
+                
+                function getCurrentIndex() {
+                    return currentDifficulty === 'easy' ? easyIndex : hardIndex;
+                }
+                
+                function incrementIndex() {
+                    if (currentDifficulty === 'easy') {
+                        easyIndex = (easyIndex + 1) % shuffledEasyExamples.length;
+                    } else {
+                        hardIndex = (hardIndex + 1) % shuffledHardExamples.length;
                     }
                 }
 
                 function loadExample() {
-                    const ex = shuffledExamples[currentExample];
+                    const examples = getCurrentExamples();
+                    const index = getCurrentIndex();
+                    const ex = examples[index];
+                    
+                    // Clear any highlighting by using textContent
                     document.getElementById('demo-sequence').textContent = ex.sequence;
                     document.getElementById('demo-query').textContent = ex.query;
                     document.getElementById('user-answer').value = '';
                     document.getElementById('feedback').innerHTML = '';
                     document.getElementById('hint').style.display = 'none';
                     document.getElementById('hint').innerHTML = '';
+                    
+                    // Reset hint button text
+                    document.getElementById('show-hint').textContent = 'Show Hint';
+                    currentViewedMechanism = null; // Reset when loading new example
                 }
+                
+                document.getElementById('difficulty-select').addEventListener('change', function(e) {
+                    currentDifficulty = e.target.value;
+                    loadExample();
+                });
+
+                document.getElementById('new-example').addEventListener('click', function() {
+                    incrementIndex();
+                    loadExample();
+                });
 
                 document.getElementById('check-answer').addEventListener('click', function() {
+                    const examples = getCurrentExamples();
+                    const index = getCurrentIndex();
+                    const ex = examples[index];
                     const userAnswer = document.getElementById('user-answer').value.toLowerCase().trim();
-                    const correctAnswer = shuffledExamples[currentExample].answer.toLowerCase();
+                    const correctAnswer = ex.answer.toLowerCase();
                     const feedback = document.getElementById('feedback');
+                    const sequenceDisplay = document.getElementById('demo-sequence');
                     
                     if (!userAnswer) {
                         feedback.innerHTML = '<p style="color: #856404;">Please enter an answer first.</p>';
                         return;
                     }
                     
-                    // Only count if this is a new attempt (feedback is empty)
-                    if (feedback.innerHTML === '') {
-                        scoreTotal++;
-                        if (userAnswer === correctAnswer) {
-                            scoreCorrect++;
-                        }
-                        updateScoreDisplay();
+                    // Determine which mechanism to show - use currently viewed or default to hint mechanism
+                    const mechanismToHighlight = currentViewedMechanism || ex.hintMechanism;
+                    
+                    // Build explanation with clickable links
+                    const reorderedMechanisms = [mechanismToHighlight, ...ex.mechanisms.filter(m => m !== mechanismToHighlight)];
+                    const newExplanation = getExplanation(reorderedMechanisms, ex.query, ex.answer, ex.relevantFacts, ex.facts, ex.selectedFact);
+                    const clickableExplanation = makeExplanationClickable(newExplanation, ex.mechanisms, mechanismToHighlight);
+                    
+                    // Show feedback in styled box
+                    if (userAnswer === correctAnswer) {
+                        feedback.innerHTML = '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;"><p style="color: #155724; font-weight: bold; margin: 0 0 10px 0;">Correct!</p><p style="color: #155724; margin: 0;">' + clickableExplanation + '</p></div>';
+                    } else {
+                        feedback.innerHTML = '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px;"><p style="color: #721c24; font-weight: bold; margin: 0 0 10px 0;">Not quite. The correct answer is <b>' + ex.answer + '</b>.</p><p style="color: #721c24; margin: 0;">' + clickableExplanation + '</p></div>';
                     }
                     
-                    if (userAnswer === correctAnswer) {
-                        feedback.innerHTML = '<p style="color: #155724; font-weight: bold;">Correct! ' + shuffledExamples[currentExample].explanation + '</p>';
-                    } else {
-                        feedback.innerHTML = '<p style="color: #721c24;">Not quite. The correct answer is <b>' + shuffledExamples[currentExample].answer + '</b>.</p><p>' + shuffledExamples[currentExample].explanation.replace('✓ Correct!', '') + '</p>';
+                    // Highlight relevant facts
+                    if (mechanismToHighlight !== 'cancel' && ex.selectedFact[mechanismToHighlight] !== undefined) {
+                        const highlighted = highlightFactsInSequence(ex.sequence, ex.selectedFact[mechanismToHighlight]);
+                        sequenceDisplay.innerHTML = highlighted;
+                    }
+                });
+
+                // Handle mechanism link clicks
+                // Handle mechanism link/button clicks
+                document.addEventListener('click', function(e) {
+                    const isLink = e.target.classList.contains('mechanism-link');
+                    const isButton = e.target.classList.contains('hint-mechanism-btn');
+                    
+                    if (isLink || isButton) {
+                        const examples = getCurrentExamples();
+                        const index = getCurrentIndex();
+                        const ex = examples[index];
+                        const selectedMechanism = e.target.getAttribute('data-mechanism');
+                        currentViewedMechanism = selectedMechanism; // Update the currently viewed mechanism
+                        const sequenceDisplay = document.getElementById('demo-sequence');
+                        const hintDiv = document.getElementById('hint');
+                        const feedback = document.getElementById('feedback');
+                        
+                        // Update highlighting
+                        if (selectedMechanism !== 'cancel' && ex.selectedFact[selectedMechanism] !== undefined) {
+                            const highlighted = highlightFactsInSequence(ex.sequence, ex.selectedFact[selectedMechanism]);
+                            sequenceDisplay.innerHTML = highlighted;
+                        } else {
+                            sequenceDisplay.textContent = ex.sequence;
+                        }
+                        
+                        // Update hint if showing
+                        if (hintDiv.style.display !== 'none') {
+                            const newHint = getHint(selectedMechanism, ex.query, ex.facts);
+                            let hintText = '<p><b>Hint:</b> ' + newHint + '</p>';
+                            if (ex.mechanisms.length > 1) {
+                                const mechanismNames = {
+                                    'copy': 'Copy',
+                                    'commute': 'Commute',
+                                    'identity': 'Identity',
+                                    'cancel': 'Cancellation',
+                                    'associate': 'Associativity'
+                                };
+                                hintText += '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;"><span style="font-size: 0.9em; margin-right: 8px;">Also solvable by:</span>';
+                                ex.mechanisms.forEach(m => {
+                                    const isActive = m === selectedMechanism;
+                                    const style = isActive
+                                        ? 'padding: 4px 10px; margin: 0 3px; border: 2px solid #856404; background: #856404; color: white; border-radius: 4px; cursor: pointer; font-size: 13px;'
+                                        : 'padding: 4px 10px; margin: 0 3px; border: 2px solid #ddd; background: white; color: #333; border-radius: 4px; cursor: pointer; font-size: 13px;';
+                                    hintText += `<button class="hint-mechanism-btn" data-mechanism="${m}" style="${style}">${mechanismNames[m]}</button>`;
+                                });
+                                hintText += '</div>';
+                            }
+                            hintDiv.innerHTML = hintText;
+                        }
+                        
+                        // Update explanation if showing
+                        if (feedback.innerHTML !== '') {
+                            const reorderedMechanisms = [selectedMechanism, ...ex.mechanisms.filter(m => m !== selectedMechanism)];
+                            const baseExplanation = getExplanation(reorderedMechanisms, ex.query, ex.answer, ex.relevantFacts, ex.facts, ex.selectedFact);
+                            const clickableExplanation = makeExplanationClickable(baseExplanation, ex.mechanisms, selectedMechanism);
+                            
+                            const userAnswer = document.getElementById('user-answer').value.toLowerCase().trim();
+                            const correctAnswer = ex.answer.toLowerCase();
+                            if (userAnswer === correctAnswer) {
+                                feedback.innerHTML = '<div style="background: #d4edda; border-left: 4px solid #28a745; padding: 15px; border-radius: 4px;"><p style="color: #155724; font-weight: bold; margin: 0 0 10px 0;">Correct!</p><p style="color: #155724; margin: 0;">' + clickableExplanation + '</p></div>';
+                            } else {
+                                feedback.innerHTML = '<div style="background: #f8d7da; border-left: 4px solid #dc3545; padding: 15px; border-radius: 4px;"><p style="color: #721c24; font-weight: bold; margin: 0 0 10px 0;">Not quite. The correct answer is <b>' + ex.answer + '</b>.</p><p style="color: #721c24; margin: 0;">' + clickableExplanation + '</p></div>';
+                            }
+                        }
                     }
                 });
 
                 document.getElementById('show-hint').addEventListener('click', function() {
+                    const examples = getCurrentExamples();
+                    const index = getCurrentIndex();
+                    const ex = examples[index];
                     const hintDiv = document.getElementById('hint');
-                    const button = document.getElementById('show-hint'); 
+                    const button = document.getElementById('show-hint');
+                    const sequenceDisplay = document.getElementById('demo-sequence');
                     
-                    if (hintDiv.style.display === 'none') { 
-                        hintDiv.innerHTML = '<p><b>Hint:</b> ' + shuffledExamples[currentExample].hint + '</p>';
+                    if (hintDiv.style.display === 'none') {
+                        // Build hint with button-style mechanism selector if multiple exist
+                        let hintText = '<p><b>Hint:</b> ' + ex.hint + '</p>';
+                        if (ex.mechanisms.length > 1) {
+                            const mechanismNames = {
+                                'copy': 'Copy',
+                                'commute': 'Commute',
+                                'identity': 'Identity',
+                                'cancel': 'Cancellation',
+                                'associate': 'Associativity'
+                            };
+                            hintText += '<div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd;"><span style="font-size: 0.9em; margin-right: 8px;">Also solvable by:</span>';
+                            ex.mechanisms.forEach(m => {
+                                const isActive = m === ex.hintMechanism;
+                                const style = isActive
+                                    ? 'padding: 4px 10px; margin: 0 3px; border: 2px solid #856404; background: #856404; color: white; border-radius: 4px; cursor: pointer; font-size: 13px;'
+                                    : 'padding: 4px 10px; margin: 0 3px; border: 2px solid #ddd; background: white; color: #333; border-radius: 4px; cursor: pointer; font-size: 13px;';
+                                hintText += `<button class="hint-mechanism-btn" data-mechanism="${m}" style="${style}">${mechanismNames[m]}</button>`;
+                            });
+                            hintText += '</div>';
+                        }
+                        
+                        hintDiv.innerHTML = hintText;
                         hintDiv.style.display = 'block';
-                        button.textContent = 'Hide Hint';  
-                    } else {  
-                        hintDiv.style.display = 'none'; 
-                        button.textContent = 'Show Hint';  
+                        button.textContent = 'Hide Hint';
+                        currentViewedMechanism = ex.hintMechanism; // Initialize with the hint mechanism
+                        
+                        // Highlight relevant facts for the hint mechanism
+                        const mechanism = ex.hintMechanism;
+                        if (mechanism && mechanism !== 'cancel' && ex.selectedFact[mechanism] !== undefined) {
+                            const highlighted = highlightFactsInSequence(ex.sequence, ex.selectedFact[mechanism]);
+                            sequenceDisplay.innerHTML = highlighted;
+                        }
+                    } else {
+                        hintDiv.style.display = 'none';
+                        button.textContent = 'Show Hint';
+                        
+                        // Remove highlighting
+                        sequenceDisplay.textContent = ex.sequence;
+                        currentViewedMechanism = null; // Reset when hiding hint
                     }
-                });
-
-                document.getElementById('new-example').addEventListener('click', function() {
-                    currentExample = (currentExample + 1) % shuffledExamples.length;
-                    loadExample();
                 });
 
                 document.getElementById('user-answer').addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         document.getElementById('check-answer').click();
-                    }
-                });
-
-                document.getElementById('reset-score').addEventListener('click', function() {
-                    if (scoreTotal >= 10) {
-                        scoreCorrect = 0;
-                        scoreTotal = 0;
-                        updateScoreDisplay();
-                        
-                        const resetButton = document.getElementById('reset-score');
-                        resetButton.disabled = true;
-                        resetButton.style.cursor = 'not-allowed';
-                        resetButton.style.opacity = '0.5';
                     }
                 });
 
