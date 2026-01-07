@@ -345,6 +345,84 @@
                     }
                 }
 
+                function getAssociativityExplanation(query, answer, triplet, facts) {
+                    const allFacts = [facts[triplet[0]], facts[triplet[1]], facts[triplet[2]]];
+                    
+                    // Parse facts: "xy=z" -> {left: 'x', right: 'y', result: 'z', str: 'xy=z'}
+                    const parseFact = (fact) => {
+                        const [pair, result] = fact.split('=');
+                        return {left: pair[0], right: pair[1], result: result, str: fact};
+                    };
+                    
+                    const a = query[0];
+                    const b = query[1];
+                    const c = answer;
+                    
+                    // Try all permutations of the three facts
+                    const permutations = [
+                        [0, 1, 2], [0, 2, 1], [1, 0, 2], 
+                        [1, 2, 0], [2, 0, 1], [2, 1, 0]
+                    ];
+                    
+                    for (let perm of permutations) {
+                        const f1 = parseFact(allFacts[perm[0]]);
+                        const f2 = parseFact(allFacts[perm[1]]);
+                        const f3 = parseFact(allFacts[perm[2]]);
+                        
+                        // Try Form 1: (a * g = f, g * d = b, f * d = c)
+                        if (f1.left === a && 
+                            f2.left === f1.right && 
+                            f2.result === b && 
+                            f3.left === f1.result && 
+                            f3.right === f2.right &&
+                            f3.result === c) {
+                            
+                            const g = f1.right;
+                            const f = f1.result;
+                            const d = f2.right;
+                            
+                            if (g === d) {
+                                return {
+                                    facts: [f1.str, f2.str, f3.str],
+                                    chain: `${a}${b} = ${a}(${g}${g}) = (${a}${g})${g} = ${f}${g} = ${c}`
+                                };
+                            }
+                            
+                            return {
+                                facts: [f1.str, f2.str, f3.str],
+                                chain: `${a}${b} = ${a}(${g}${d}) = (${a}${g})${d} = ${f}${d} = ${c}`
+                            };
+                        }
+                        
+                        // Try Form 2: (d * b = f, g * d = a, g * f = c)
+                        if (f1.right === b && 
+                            f2.result === a && 
+                            f2.left === f3.left && 
+                            f3.right === f1.result &&
+                            f3.result === c) {
+                            
+                            const d = f1.left;
+                            const f = f1.result;
+                            const g = f2.left;
+                            
+                            if (d === f) {
+                                return {
+                                    facts: [f1.str, f2.str, f3.str],
+                                    chain: `${a}${b} = (${g}${d})${d} = ${g}(${d}${d}) = ${g}${f} = ${c}`
+                                };
+                            }
+                            
+                            return {
+                                facts: [f1.str, f2.str, f3.str],
+                                chain: `${a}${b} = (${g}${d})${b} = ${g}(${d}${b}) = ${g}${f} = ${c}`
+                            };
+                        }
+                    }
+                    
+                    // Fallback if pattern matching fails
+                    return null;
+                }
+
                 function getExplanation(mechanisms, query, answer, relevantFacts, facts, selectedFacts) {
                     const mechanismNames = {
                         'copy': 'verbatim copying',
@@ -410,19 +488,42 @@
                         const identityVar = leftPart[0] === rightPart ? leftPart[1] : leftPart[0];
                         
                         explanation = `This sequence can be solved by <b>${mechanismNames['identity']}</b>. The fact "${actualFact}" shows that '${identityVar}' is an identity element (it leaves other variables unchanged). Applying the identity rule to the query "${query}" tells us the answer is ${answer}.`;
-                    
                     } else if (primaryMechanism === 'associate' && factIndex !== undefined && facts) {
                         const triplet = Array.isArray(factIndex) ? factIndex : [factIndex];
+                        
                         if (triplet.length === 3) {
+                            const result = getAssociativityExplanation(query, answer, triplet, facts);
+                            
+                            if (result) {
+                                explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${result.facts[0]}", "${result.facts[1]}", and "${result.facts[2]}", the correct answer can be determined using the associative law: ${result.chain}`;
+                            } else {
+                                const fact1 = facts[triplet[0]];
+                                const fact2 = facts[triplet[1]];
+                                const fact3 = facts[triplet[2]];
+                                explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${fact1}", "${fact2}", and "${fact3}" together, the correct answer can be determined using the associative law.`;
+                            }
+                        } else if (triplet.length === 2) {
+                            // Special case: squaring - only need 2 facts
                             const fact1 = facts[triplet[0]];
                             const fact2 = facts[triplet[1]];
-                            const fact3 = facts[triplet[2]];
-                            explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${fact1}", "${fact2}", and "${fact3}" together, the correct answer can be determined using the associative law.`;
+                            
+                            const f1 = {left: fact1[0], right: fact1[1], result: fact1.split('=')[1]};
+                            const f2 = {left: fact2[0], right: fact2[1], result: fact2.split('=')[1]};
+                            
+                            const a = query[0];
+                            const b = query[1];
+                            
+                            // Pattern: a * b = a * (x * x) = (a * x) * x = f * x = answer
+                            if (f1.left === a && f2.left === f2.right && f1.right === f2.left && f2.result === b) {
+                                const x = f2.left;
+                                const f = f1.result;
+                                explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${fact1}" and "${fact2}", the correct answer can be determined using the associative law: ${a}${b} = ${a}(${x}${x}) = (${a}${x})${x} = ${f}${x} = ${answer}`;
+                            } else {
+                                explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining the facts "${fact1}" and "${fact2}" together, the correct answer can be determined using the associative law.`;
+                            }
                         } else {
-                            explanation =  `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining facts together, the correct answer can be determined using the associative law. For example, the three facts "xg=f", "gd=y", and "fd=z" allow the following chain: fd = (xg)d = x(gd) = xy = z`
+                            explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining facts together, the correct answer can be determined using the associative law.`;
                         }
-                    // } else if (primaryMechanism === 'associate' && actualFact) {
-                    //     explanation = `This sequence can be solved by <b>${mechanismNames['associate']}</b>. By chaining facts together using the associative law, the correct answer can be determined.`;
                         
                     } else {
                         // Fallback to generic explanation
