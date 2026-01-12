@@ -567,7 +567,7 @@
                 }
 
                 function highlightFactsInSequence(sequenceText, factIndices) {
-                    if (!factIndices) {
+                    if (factIndices === undefined || factIndices === null) {
                         return sequenceText;
                     }
                     
@@ -854,6 +854,7 @@
                         
                         // Highlight relevant facts for the hint mechanism
                         const mechanism = ex.hintMechanism;
+                        console.log('mechanism:', mechanism, 'selectedFact:', ex.selectedFact[mechanism], 'all selectedFacts:', ex.selectedFact);
                         if (mechanism && mechanism !== 'cancel' && ex.selectedFact[mechanism] !== undefined) {
                             const highlighted = highlightFactsInSequence(ex.sequence, ex.selectedFact[mechanism]);
                             sequenceDisplay.innerHTML = highlighted;
