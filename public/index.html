@@ -913,14 +913,14 @@
                 </p>
                 <p>
                     We measure the percentage of (a) training sequences and (b) hold-out sequences that these algorithms can theoretically solve. We find that 
-                    they cover 90.4% AUC of the training sequences and 84.7% AUC of hold-out sequences, within 2-3% of the model's empirical performance (shown in black).
+                    they can solve 90.4% of training sequences (AUC) and 84.7% of hold-out sequences, within 2-3% of the model's empirical performance (shown in black).
                     The model shows very good empirical performance on four of the five targeted data distributions, with associativity being more challenging.
                     <!-- The gap suggests that there may be other interesting mechansims the model has learned that this analysis misses. -->
                 </p>
 
                 <h2>Verifying Mechanisms</h2>
                 <p>
-                    Based on the results above, we investigate how the model implements the algorithms with stronger empirical evidence: <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, and <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>. 
+                    Based on the results above, we investigate how the model implements the strategies with stronger empirical evidence: <span class="mechanism-badge badge-copy">Verbatim Copying</span>, <span class="mechanism-badge badge-commute">Commutative Copying</span>, <span class="mechanism-badge badge-identity">Identity Element Recognition</span>, and <span class="mechanism-badge badge-cancel">Closure-Based Cancellation</span>. 
                     The results in this section are based on a single representative model, though we see <a href="#phase-transitions">similar results across training runs</a>.
                 </p>
 
@@ -981,7 +981,7 @@
                     The final mechanism we study is closure-based cancellation. It is also a combination of two complementary sub-mechanisms: 
                     (1) tracking and promoting variables belonging to the same algebraic group (i.e., <b>the closure</b>), and (2) systematically eliminating invalid answers using the <b>cancellation law</b>.
                     The difference between these two sets produces the final answer.
-                    We verify this mechanism by identifying subspaces that causally represent the closure and cancellation sets, though we find evidence this computation is spread across several attention heads.
+                    We verify this mechanism by identifying subspaces that causally represent the closure and cancellation sets, due to evidence that this computation is spread across several attention heads.
                 </p>
 
                 
@@ -993,19 +993,18 @@
                 </figure>
                 <p>
                 We find that models undergo a similar sequence of phase transitions during training across different seeds and configurations.
-                Models first learn to <b>(1) predict structural tokens</b>, followed quickly by <b>(2) learning to compute group closure</b>: learning that combining two group elements always yields another valid group element.
-                At the same time, the model learns the <b>(3) query promotion submechanism</b>, achieving around 50% on identity sequences.
-
+                Models first learn to <b>(1) predict structural tokens</b> (like '=' and ','), followed quickly by <b>(2) learning to compute group closure</b>: learning that combining two group elements always yields another valid group element.
+                At the same time, the model learns the <b>(3) query promotion submechanism</b>, which can achieve around 50% on identity sequences.
                 
                 The next sharp drop in loss corresponds to the model learning <b>(4) contextual copying</b>, first reproducing facts verbatim
                 and then extending to <b>(5) commutative copying</b>.
                 
-                Later mechanisms emerge more gradually. The model develops \textbf{identity recognition}, steadily improving on identity-related facts 
-                Once the model can retrieve facts from context, it quickly learns to solve both identity and cancellation facts at the same time. 
-                We hypothesize these are learned jointly because the <b>(6) elimination subspace</b> and the <b>(7) identity demotion mechanism </b> perform similar functions, and their "promotion" submechanism counterparts are learned at similar times earlier in training.
+                <!-- Later mechanisms emerge more gradually. The model develops <b>identity recognition</b>, steadily improving on identity-related facts. -->
+                Once the model can retrieve facts from context, it quickly learns to solve both <b>(6) identity</b> and <b>(7) cancellation facts</b> at the same time. 
+                We hypothesize these are learned jointly because the <b>elimination subspace</b> and the <b>identity demotion mechanism</b>  perform similar functions, and their "promotion" submechanism counterparts are learned at similar times earlier in training.
                 
                 
-                Finally, models begin to solve some associative sequences, though this happ. 
+                Finally, models begin to solve some associative sequences. 
                 This learning trajectory suggests that models acquire discrete skills in a particular order, building on previously learned mechanisms to learn more complex ones. 
                 </p>
                 
