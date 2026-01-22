@@ -308,7 +308,7 @@
                     [",hc=a,jb=o,lb=k,aa=e,pe=e,nl=j,nk=o",["associate"],{"associate":[1,5,2]}],
                     [",ig=l,oo=j,ei=c,cg=k,bb=d,nh=o,el=k",["associate"],{"associate":[0,2,3]}],
                     [",ji=a,ll=k,mp=f,lo=c,aa=e,lc=l,ko=l",["associate"],{"associate":[3,5,1]}],
-                    [",cm=c,pg=e,pp=l,bb=c,gg=p,cc=c,eg=l",["cancel","associate"],{"cancel":[["g","e","p"],["p","e"]],"associate":[4,2,1]}],
+                    [",cm=c,pg=e,pp=l,bb=c,gg=p,cc=c,eg=l",["associate"],{"associate":[4,2,1]}],
                     [",oh=l,al=a,kk=j,ao=i,jk=f,pg=g,ih=a",["associate"],{"associate":[0,3,1]}],
                     [",na=m,hm=m,nh=n,nn=h,mm=h,am=n,nm=a",["cancel"],{"cancel":[["a","n","h","m"],["n","h","m"]]}],
                     [",ah=p,ab=a,bp=p,hp=b,aa=b,pp=a,ap=h",["cancel"],{"cancel":[["a","b","h","p"],["a","b","p"]]}],
@@ -947,7 +947,7 @@
                     <img src="images/paper/identity.png" style="width:100%">
                     <figcaption>
                         <b>Identity Recognition:</b> (a) PCA decomposition of fact hidden states at the final attention layer reveals a clear separation of identity facts (blue) and non-identity facts (red).
-                        (b) Head 3.1 promotes the logits of both variables in the query ($a$ and $e$), while head 3.6 demotes the logit of the identity variable, $e$.
+                        (b) Head 3.1 promotes the logits of both variables in the query (a and e), while head 3.6 demotes the logit of the identity variable, e.
                         (c) PCA steering on its own can induce identity behavior, but it promotes both variables in the query to have near-equal logits.
                         Inserting a false identity fact for either query variable triggers identity demotion, which, along with PCA steering, achieves cleaner identity control.
                     </figcaption>
