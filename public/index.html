@@ -170,7 +170,7 @@
                 <h2>The Task: In-Context Algebra</h2>
                 
                 <p>
-                    We train transformers to solve arithmetic problems sampled from a mixture of finite algebraic groups (like cyclic and dihedral groups). 
+                    We train transformers to solve arithmetic problems sampled from a mixture of finite groups (like cyclic and dihedral groups). 
                     Each task sequence presents several examples of products between elements in a group with the goal that models will learn to predict the outcome of unseen group products.
                     However, key challenge is that <b>each token is a variable whose meaning changes between sequences</b>. 
                     For example, the symbol "g" might represent the identity in one sequence but a 90-degree rotation in another. 
@@ -882,7 +882,7 @@
                 <p>
                     We generate in-context algebra sequences in three steps:
                     <ol>
-                        <li>Sample a set of algebraic groups with total order less than or equal to the number of variable tokens. </li>
+                        <li>Sample a set of groups with total order less than or equal to the number of variable tokens. </li>
                         <li>Assign a variable token to each group element using a random one-to-one mapping.</li>
                         <li>Sample facts from the randomly sampled groups, convert facts into variable statements, and concatenate them together into a sequence.</li>
                     </ol>
@@ -894,7 +894,7 @@
                 <h2>Can Transformers Learn This Task?</h2>
                 <p>
                     Models achieve near-perfect hold-out accuracy for in-distribution groups: (a) cyclic groups and (b) dihedral groups.
-                    In general, hold-out performance improves as more facts are given as context to the model. More surprising is the model's generalization to (c) unseen algebraic groups.
+                    In general, hold-out performance improves as more facts are given as context to the model. More surprising is the model's generalization to (c) unseen groups.
                     Models also perform well on semigroups, but worse on quasigroups and collapse on magmas (also shown in (c)).
                 </p>
                 <p class="text-center">
@@ -979,7 +979,7 @@
 
                 <p>
                     The final mechanism we study is closure-based cancellation. It is also a combination of two complementary sub-mechanisms: 
-                    (1) tracking and promoting variables belonging to the same algebraic group (i.e., <b>the closure</b>), and (2) systematically eliminating invalid answers using the <b>cancellation law</b>.
+                    (1) tracking and promoting variables belonging to the same group (i.e., <b>the closure</b>), and (2) systematically eliminating invalid answers using the <b>cancellation law</b>.
                     The difference between these two sets produces the final answer.
                     We verify this mechanism by identifying subspaces that causally represent the closure and cancellation sets, due to evidence that this computation is spread across several attention heads.
                 </p>
